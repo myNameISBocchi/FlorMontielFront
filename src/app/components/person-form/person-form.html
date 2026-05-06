@@ -1,83 +1,90 @@
-<div class="form-container animate__animated animate__fadeIn">
-  <div class="form-card shadow">
-    <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
-      <div class="row g-4">
-        
-        <!-- Primera Columna -->
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label class="form-label">Nombre:</label>
-            <input type="text" formControlName="firstName" class="custom-input">
+<div class="container mt-5">
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    
+    <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center">
+      <i class="bi bi-chevron-left me-2" style="cursor: pointer;"></i>
+      <h4 class="mb-0 fw-bold text-secondary">Registrar Voceros</h4>
+    </div>
+
+    <div class="card-body bg-light p-4">
+      <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
+        <div class="row g-4">
+          
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Nombre:</label>
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="firstName" placeholder="Ej. Alfonso">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Apellido:</label>
-            <input type="text" formControlName="lastName" class="custom-input">
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Correo:</label>
+            <input type="email" class="form-control form-control-lg shadow-sm" formControlName="email" placeholder="ejemplo@correo.com">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Cédula:</label>
-            <input type="text" formControlName="identification" class="custom-input">
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Apellido:</label>
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="lastName" placeholder="Ej. Espina">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Ciudad:</label>
-            <select formControlName="cityId" class="custom-input">
-              @for (city of cities; track city.id) {
-                <option [value]="city.id">{{ city.cityName }}</option>
-              }
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Contraseña:</label>
+            <input type="password" class="form-control form-control-lg shadow-sm" formControlName="password" placeholder="********">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Cédula:</label>
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="identification" placeholder="V-31478490">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Teléfono:</label>
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="phone" placeholder="0414-0000000">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Ciudad:</label>
+            <select class="form-select form-select-lg shadow-sm" formControlName="cityId">
+              <option value="">Seleccione la ciudad</option>
+              <option *ngFor="let c of city" [value]="c.cityId">{{c.cityName}}</option>
             </select>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Comunidad:</label>
-            <select formControlName="comunityId" class="custom-input">
-              @for (c of comunities; track c.id) {
-                <option [value]="c.id">{{ c.comunityName }}</option>
-              }
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Fecha De Nacimiento:</label>
+            <input type="date" class="form-control form-control-lg shadow-sm" formControlName="date">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Comunidad:</label>
+            <select class="form-select form-select-lg shadow-sm" formControlName="comunityId">
+              <option value="">Seleccione la comunidad</option>
+              <option *ngFor="let c of comunity" [value]="c.comunityId">{{c.comunityName}}</option>
             </select>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Concejo:</label>
-            <select formControlName="councilId" class="custom-input">
-              @for (co of councils; track co.id) {
-                <option [value]="co.id">{{ co.councilName }}</option>
-              }
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Comité:</label>
+            <select class="form-select form-select-lg shadow-sm" formControlName="committeeId">
+              <option value="">Seleccione el comité</option>
+              <option *ngFor="let c of committee" [value]="c.committeeId">{{c.committeeName}}</option>
             </select>
           </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Consejo Comunal:</label>
+            <select class="form-select form-select-lg shadow-sm" formControlName="councilId">
+              <option value="">Seleccione el consejo</option>
+              <option *ngFor="let c of council" [value]="c.councilId">{{c.councilName}}</option>
+            </select>
+          </div>
+
         </div>
 
-        <!-- Segunda Columna -->
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label class="form-label">Correo:</label>
-            <input type="email" formControlName="email" class="custom-input">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Contraseña:</label>
-            <input type="password" formControlName="password" class="custom-input">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Teléfono:</label>
-            <input type="text" formControlName="phone" class="custom-input">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fecha De Nacimiento:</label>
-            <input type="date" formControlName="date" class="custom-input">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Comité:</label>
-            <select formControlName="committeeId" class="custom-input">
-              @for (com of committees; track com.id) {
-                <option [value]="com.id">{{ com.committeeName }}</option>
-              }
-            </select>
-          </div>
+        <div class="mt-5 text-center">
+          <button type="submit" class="btn btn-primary btn-lg px-5 py-2 rounded-3 shadow" [disabled]="personForm.invalid">
+            Registrar
+          </button>
         </div>
-
-      </div>
-
-      <div class="text-center mt-4">
-        <button type="submit" class="btn-registrar" [disabled]="personForm.invalid">
-          Registrar
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>

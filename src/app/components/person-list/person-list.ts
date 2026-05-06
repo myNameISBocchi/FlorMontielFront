@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit, inject,  } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-person-list',
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './person-list.css',
 })
 export class PersonList implements OnInit {
+  private router = inject(Router);
   private personService = inject(Person);
   private cdr = inject(ChangeDetectorRef);
 
@@ -32,6 +34,9 @@ export class PersonList implements OnInit {
     },
     error: (err) => console.error('Error:',err)
   });
+  }
+  goToRegister() {
+    this.router.navigate(['/personForm']); //
   }
 
   onSearch(){

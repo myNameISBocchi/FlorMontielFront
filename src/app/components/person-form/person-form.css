@@ -22,13 +22,13 @@
     width: 100%;
     padding: 8px 15px;
     border: 1px solid #707070;
-    border-radius: 10px; /* Redondeado como en la imagen */
+    border-radius: 10px; 
     background-color: #fff;
     outline: none;
 }
 
 .btn-registrar {
-    background-color: #C4C4C4; /* Gris del botón de la imagen */
+    background-color: #C4C4C4; 
     border: none;
     padding: 10px 60px;
     border-radius: 10px;

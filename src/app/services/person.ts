@@ -9,6 +9,10 @@ export class Person {
   private http = inject(HttpClient);
 
   private apiUrl = "http://localhost/app-back/public/api/peoples";
+  private apiComunity = 'http://localhost/app-back/public/api/comunities';
+  private apiCouncil = 'http://localhost/app-back/public/api/councils';
+  private apiCommitte = 'http://localhost/app-back/public/api/committees';
+  private apiCities = 'http://localhost/app-back/public/api/cities';
 
   getPeoples(): Observable<any>{
     return this.http.get<any>(this.apiUrl);
@@ -29,6 +33,26 @@ export class Person {
 
   getPersonById(id:string):Observable <any>{
     return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  createPerson(data:any):Observable<any>{
+    return this.http.post(this.apiUrl, data);
+  }
+
+  getComunity():Observable<any>{
+    return this.http.get(this.apiComunity);
+  }
+
+  getCouncil():Observable<any>{
+    return this.http.get(this.apiCouncil);
+  }
+
+  getCommitte():Observable<any>{
+    return this.http.get(this.apiCommitte);
+  }
+
+  getCity():Observable<any>{
+    return this.http.get(this.apiCities);
   }
 
 }
