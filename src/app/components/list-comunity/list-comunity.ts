@@ -77,6 +77,7 @@ export class ListComunity implements OnInit {
         alert('comunidad creada con exito');
         form.reset();
         this.getComunity();
+        this.comunitySelect = null;
       },
       error: (err) => {
         console.log("fallo al crear", err);

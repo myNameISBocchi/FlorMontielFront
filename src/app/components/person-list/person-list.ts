@@ -19,9 +19,23 @@ export class PersonList implements OnInit {
   peoples: any[] = [];
   filteredPeoples:any[] = [];
   searchTerm: string = '';
+  personSelect:any = null;
+  comunity:any[] = [];
+  council:any[] = [];
+  committee:any[] = [];
+  city:any[] = [];
+
 
   ngOnInit(): void {
     this.loadPeoples();
+    this.cargarCatalogos();
+  }
+
+  cargarCatalogos() {
+    this.personService.getComunity().subscribe(res => this.comunity = res.result || res.results || res);
+    this.personService.getCouncil().subscribe(res => this.council = res.result || res.results || res);
+    this.personService.getCommitte().subscribe(res => this.committee = res.result || res.results || res);
+    this.personService.getCity().subscribe(res => this.city = res.results || res.result || res);
   }
 
   loadPeoples(){
@@ -36,8 +50,15 @@ export class PersonList implements OnInit {
   });
   }
   goToRegister() {
-    this.router.navigate(['/personForm']); //
+    this.router.navigate(['/personForm']); 
   }
+
+  openEditModal(person: any) {
+  this.personSelect = { ...person };
+  if (this.personSelect.date) {
+    this.personSelect.date = this.personSelect.date.split(' ')[0];
+  }
+}
 
   onSearch(){
     const data = this.searchTerm.trim();
@@ -90,10 +111,45 @@ export class PersonList implements OnInit {
 
         }
       });
+    }
+  }
 
+updatePerson() {
+    if (!this.personSelect || !this.personSelect.personId) return;
+    const id = this.personSelect.personId;
+    const dataToUpdate: any = {
+      firstName: this.personSelect.firstName,
+      lastName: this.personSelect.lastName,
+      identification: this.personSelect.identification,
+      phone: this.personSelect.phone,
+      date: this.personSelect.date,
+      cityId: this.personSelect.cityId,
+      email: this.personSelect.email,
+      status: this.personSelect.status
+    };
+
+    if (this.personSelect.password && this.personSelect.password.trim() !== '') {
+      dataToUpdate.password = this.personSelect.password;
     }
 
+    this.personService.updatePerson(id, dataToUpdate).subscribe({
+      next: () => {
+        alert("¡Registro actualizado con éxito!");
+        this.loadPeoples();
+        this.personSelect = null;
+        const modalElement = document.getElementById('editPersonModal');
+        if (modalElement) {
+          const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+          if (bootstrapModal) bootstrapModal.hide();
+        }
+      },
+      error: (err) => {
+        console.error("Error:", err);
+        alert("No se pudo actualizar el registro.");
+      }
+    });
   }
+
   handleImageError(event: any) {
     event.target.src = 'assets/img/default-avatar.png';
 }

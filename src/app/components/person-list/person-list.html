@@ -1,7 +1,7 @@
 <div class="container-fluid px-3 px-md-4 py-3">
     <div class="row mb-4">
         <div class="col-12 col-md-6 mx-auto">
-            <div class="input-group">
+            <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0">
                     <i class="fas fa-search text-muted"></i>
                 </span>
@@ -12,42 +12,111 @@
 
     <div class="row mb-3">
         <div class="col-12 text-end">
-            <button class="btn btn-success btn-sm" (click)="goToRegister()">
-                <i class="fas fa-plus me-1"></i> Registrar
+            <button class="btn btn-danger btn-sm px-3 shadow-sm" (click)="goToRegister()">
+                <i class="fas fa-plus me-1"></i> Registrar Vocero
             </button>
         </div>
     </div>
 
     <div class="row g-3">
         <div *ngFor="let person of filteredPeoples" class="col-auto mb-4">
-            <div class="person-card">
+            <div class="person-card shadow-sm border">
                 <div class="img-wrapper">
                     <img [src]="person.photoPerson ? 'http://localhost/app-back/public/' + person.photoPerson : 'img/default.png'" 
                          [alt]="person.firstName"
                          (error)="handleImageError($event)">
                 </div>
 
-                <div class="card-info">
-                    <h5 class="title">{{ person.firstName }} {{ person.lastName }}</h5>
-                    <p class="detail"><strong>COMUNIDAD:</strong> {{ person.comunityName || 'N/A' }}</p>
-                    <p class="detail"><strong>CONSEJO:</strong> {{ person.councilName || 'N/A' }}</p>
-                    <p class="detail"><strong>ROL:</strong> {{ person.roleName || 'SIN ROL' }}</p>
-                    <p class="location">
-                        <i class="fa-solid fa-location-dot"></i> {{ person.locality?.state || 'ZULIA' }}
+                <div class="card-info p-3">
+                    <h5 class="title fw-bold mb-1">{{ person.firstName }} {{ person.lastName }}</h5>
+                    <p class="detail mb-1 text-truncate"><strong>COMUNIDAD:</strong> {{ person.comunityName || 'N/A' }}</p>
+                    <p class="detail mb-1 text-truncate"><strong>CONSEJO:</strong> {{ person.councilName || 'N/A' }}</p>
+                    <p class="detail mb-1 text-truncate"><strong>ROL:</strong> {{ person.roleName || 'SIN ROL' }}</p>
+                    <p class="location mt-2 small text-muted">
+                        <i class="fa-solid fa-location-dot text-danger"></i> {{ person.locality?.state || 'ZULIA' }}
                     </p>
                 </div>
 
-                <div class="card-actions">
-                    <label [for]="'file-' + person.personId" class="action-btn view">
-                        <i class="fa-solid fa-camera"></i>
+                <div class="card-actions border-top d-flex justify-content-around p-2 bg-light">
+                    <button class="action-btn edit text-primary border-0 bg-transparent" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editPersonModal" 
+                            (click)="openEditModal(person)"
+                            title="Editar Datos">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+
+                    <label [for]="'file-' + person.personId" class="action-btn view text-success border-0 bg-transparent m-0" style="cursor: pointer;" title="Cambiar Foto">
+                        <i class="bi bi-card-image"></i>
                     </label>
                     <input type="file" [id]="'file-' + person.personId" hidden (change)="onFileSelected($event, person.personId)">
                     
-                    <button class="action-btn delete" (click)="deletePerson(person.personId)">
-                        <i class="fa-solid fa-trash"></i>
+                    <button class="action-btn delete text-danger border-0 bg-transparent" 
+                            (click)="deletePerson(person.personId)"
+                            title="Eliminar Registro">
+                        <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPersonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white p-4">
+                <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2"></i>ACTUALIZAR DATOS DEL VOCERO</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form *ngIf="personSelect" (submit)="updatePerson()">
+                <div class="modal-body p-4 bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">NOMBRES</label>
+                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.firstName" name="editFirstName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">APELLIDOS</label>
+                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.lastName" name="editLastName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">CÉDULA</label>
+                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.identification" name="editIden" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">TELÉFONO</label>
+                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.phone" name="editPhone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">FECHA DE NACIMIENTO</label>
+                            <input type="date" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.date" name="editDate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">CORREO ELECTRÓNICO</label>
+                            <input type="email" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.email" name="editEmail" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">CIUDAD / ESTADO</label>
+                            <select class="form-select border-0 shadow-sm" [(ngModel)]="personSelect.cityId" name="editCity" required>
+                                <option *ngFor="let c of city" [value]="c.cityId">{{ c.cityName || c.state }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">NUEVA CONTRASEÑA (OPCIONAL)</label>
+                            <input type="password" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.password" name="editPass" placeholder="Vacío para no cambiar">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 p-4 pt-0 bg-light">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CANCELAR</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold">
+                        ACTUALIZAR REGISTRO
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

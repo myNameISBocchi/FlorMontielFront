@@ -8,3 +8,11 @@
 .nav-link:not(.active):hover {
     background-color: #f8f9fa;
 }
+.action-btn i {
+    font-size: 1.25rem; 
+    transition: transform 0.2s;
+}
+
+.action-btn:hover i {
+    transform: scale(1.2); 
+}

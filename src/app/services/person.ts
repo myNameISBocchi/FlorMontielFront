@@ -55,4 +55,8 @@ export class Person {
     return this.http.get(this.apiCities);
   }
 
+  updatePerson(id:string, data:any):Observable<any>{
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data);
+  }
+
 }
