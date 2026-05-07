@@ -22,7 +22,7 @@
         <div *ngFor="let person of filteredPeoples" class="col-auto mb-4">
             <div class="person-card shadow-sm border">
                 <div class="img-wrapper">
-                    <img [src]="person.photoPerson ? 'http://localhost/app-back/public/' + person.photoPerson : 'img/default.png'" 
+                    <img [src]="person.photoPerson ? 'http://localhost/app-back/public/' + person.photoPerson : '/img/default.png'" 
                          [alt]="person.firstName"
                          (error)="handleImageError($event)">
                 </div>
