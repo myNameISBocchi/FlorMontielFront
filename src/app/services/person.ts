@@ -13,6 +13,7 @@ export class Person {
   private apiCouncil = 'http://localhost/app-back/public/api/councils';
   private apiCommitte = 'http://localhost/app-back/public/api/committees';
   private apiCities = 'http://localhost/app-back/public/api/cities';
+  private apiRoles = 'http://localhost/app-back/public/api/roles';
 
   getPeoples(): Observable<any>{
     return this.http.get<any>(this.apiUrl);
@@ -57,6 +58,11 @@ export class Person {
 
   updatePerson(id:string, data:any):Observable<any>{
     return this.http.put<any>(`${this.apiUrl}/${id}`, data);
+  }
+
+  getRoles():Observable<any>{
+    return this.http.get<any>(`${this.apiRoles}`);
+    
   }
 
 }
