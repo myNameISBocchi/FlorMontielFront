@@ -24,6 +24,8 @@ export class PersonList implements OnInit {
   council: any[] = [];
   committee: any[] = [];
   city: any[] = [];
+  roles: any[] = []; 
+  selectedRolesMap: { [key: string]: boolean } = {};
 
   ngOnInit(): void {
     this.loadPeoples();
@@ -31,6 +33,7 @@ export class PersonList implements OnInit {
   }
 
   cargarCatalogos() {
+    this.personService.getRoles().subscribe(res => this.roles = res.results || res);
     this.personService.getComunity().subscribe(res => this.comunity = res.result || res.results || res);
     this.personService.getCouncil().subscribe(res => this.council = res.result || res.results || res);
     this.personService.getCommitte().subscribe(res => this.committee = res.result || res.results || res);
@@ -54,8 +57,17 @@ export class PersonList implements OnInit {
 
   openEditModal(person: any) {
     this.personSelect = { ...person };
+    this.selectedRolesMap = {};
+
     if (this.personSelect.date) {
       this.personSelect.date = this.personSelect.date.split(' ')[0];
+    }
+
+    if (person.roleId) {
+      const currentRoles = Array.isArray(person.roleId) ? person.roleId : [person.roleId];
+      currentRoles.forEach((id: string) => {
+        this.selectedRolesMap[id] = true;
+      });
     }
   }
 
@@ -75,6 +87,34 @@ export class PersonList implements OnInit {
         console.error('error', err);
         this.filteredPeoples = [];
       }
+    });
+  }
+
+  isRoleSelected(roleId: string): boolean {
+    return !!this.selectedRolesMap[roleId];
+  }
+
+  toggleRole(roleId: string): void {
+    this.selectedRolesMap[roleId] = !this.selectedRolesMap[roleId];
+  }
+
+  saveRoles() {
+    if (!this.personSelect || !this.personSelect.personId) return;
+
+    const rolesToSave = Object.keys(this.selectedRolesMap)
+      .filter(key => this.selectedRolesMap[key] === true);
+
+    this.personService.assignRoles(this.personSelect.personId, rolesToSave).subscribe({
+      next: () => {
+        alert("Roles actualizados correctamente");
+        this.loadPeoples();
+        const modalElement = document.getElementById('assignRolesModal');
+        if (modalElement) {
+          const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+          if (bootstrapModal) bootstrapModal.hide();
+        }
+      },
+      error: (err) => console.error(err)
     });
   }
 

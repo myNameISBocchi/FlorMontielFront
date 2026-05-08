@@ -46,6 +46,14 @@
                         <i class="bi bi-pencil-square"></i>
                     </button>
 
+                    <button class="action-btn text-warning border-0 bg-transparent"
+                            data-bs-toggle="modal"
+                            data-bs-target="#assignRolesModal"
+                            (click)="openEditModal(person)"
+                            title="Asignar Roles">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </button>
+
                     <label [for]="'file-' + person.personId" class="action-btn view text-success border-0 bg-transparent m-0" style="cursor: pointer;" title="Cambiar Foto">
                         <i class="bi bi-card-image"></i>
                     </label>
@@ -117,6 +125,42 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignRolesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-dark p-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-check me-2"></i>ASIGNAR ROLES</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div *ngIf="personSelect" class="mb-4 text-center">
+                    <p class="fw-bold">{{ personSelect.firstName }} {{ personSelect.lastName }}</p>
+                </div>
+                <div class="list-group list-group-flush">
+                    <div *ngFor="let role of roles" class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
+                        <div>
+                            <span class="fw-bold d-block">{{ role.roleName }}</span>
+                            <small class="text-muted">Permisos de nivel institucional</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" 
+                                   [checked]="isRoleSelected(role.roleId)"
+                                   (change)="toggleRole(role.roleId)"
+                                   style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CERRAR</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold" (click)="saveRoles()">
+                    GUARDAR CAMBIOS
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -23,6 +23,9 @@ export class Person {
     const params = new HttpParams().set('firstName', data);
       return this.http.get<any>(`${this.apiUrl}/search`,{ params } );
   }
+  assignRoles(id: string, roles: string[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/roles`, { roles });
+  }
 
   deletePerson(id:string):Observable<any>{
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
