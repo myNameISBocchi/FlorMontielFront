@@ -3,6 +3,7 @@
     <h4 class="text-dark fw-bold mb-0">
       <i class="fa-solid fa-house-user"></i>GESTION DE COMUNAS
     </h4>
+
     <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">
       {{comunity.length}} Comunidades Activas
     </span>
@@ -50,16 +51,16 @@
 
           <div class="card-actions">
             <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
-              <i class="fa-solid fa-pen"></i>
+              <i class="fa-solid fa-pen-to-square"></i>
             </button>
             
             <label [for]="'file-' + item.comunityId" class="action-btn view">
-              <i class="fa-solid fa-camera"></i>
+             <i class="fa-solid fa-camera"></i>
             </label>
             <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
             
             <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
-              <i class="fa-solid fa-trash"></i>
+              <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
         </div>
