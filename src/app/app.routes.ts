@@ -4,6 +4,7 @@ import { ListComunity } from './components/list-comunity/list-comunity';
 import { Home } from './components/home/home';
 import { PersonList } from './components/person-list/person-list';
 import { PersonForm } from './components/person-form/person-form';
+import { CouncilList } from './components/council-list/council-list';
 
 
 import { authGuard, publicGuard } from './guards/auth.guards'; 
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: 'person', component: PersonList, canActivate: [authGuard] },
     { path: 'personForm', component: PersonForm, canActivate: [authGuard] },
     { path: 'comunity', component: ListComunity, canActivate: [authGuard] },
+    { path: 'council', component: CouncilList, canActivate: [authGuard]},
     
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/login' } 
