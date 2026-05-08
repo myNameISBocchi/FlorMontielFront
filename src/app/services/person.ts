@@ -68,4 +68,13 @@ export class Person {
     
   }
 
+getCouncilsByComunity(comunityId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiCouncil}/bycomunity/${comunityId}`);
+}
+
+getSubcommittees(parentId:string):Observable<any>{
+  return this.http.get<any>(`${this.apiCommitte}/subCommittees/${parentId}`);
+
+}
+
 }

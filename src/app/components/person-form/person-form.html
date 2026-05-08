@@ -62,6 +62,14 @@
           </div>
 
           <div class="col-md-6">
+            <label class="form-label fw-semibold text-muted">Consejo Comunal:</label>
+            <select class="form-select form-select-lg shadow-sm" formControlName="councilId" [attr.disabled]="!personForm.get('comunityId')?.value ? true : null">
+              <option value="">{{ !personForm.get('comunityId')?.value ? 'Esperando comunidad...' : 'Seleccione el consejo' }}</option>
+              <option *ngFor="let c of council" [value]="c.councilId">{{c.councilName}}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
             <label class="form-label fw-semibold text-muted">Comité:</label>
             <select class="form-select form-select-lg shadow-sm" formControlName="committeeId">
               <option value="">Seleccione el comité</option>
@@ -69,11 +77,11 @@
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Consejo Comunal:</label>
-            <select class="form-select form-select-lg shadow-sm" formControlName="councilId">
-              <option value="">Seleccione el consejo</option>
-              <option *ngFor="let c of council" [value]="c.councilId">{{c.councilName}}</option>
+          <div class="col-md-6" *ngIf="showSubcommittee">
+            <label class="form-label fw-semibold text-danger animate__animated animate__fadeIn">Subcomité:</label>
+            <select class="form-select form-select-lg shadow-sm border-danger" formControlName="subcommitteeId">
+              <option value="">Seleccione el subcomité</option>
+              <option *ngFor="let s of subcommittees" [value]="s.id">{{s.committeeName}}</option>
             </select>
           </div>
 

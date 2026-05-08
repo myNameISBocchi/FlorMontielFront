@@ -31,6 +31,7 @@
                     <h5 class="title fw-bold mb-1">{{ person.firstName }} {{ person.lastName }}</h5>
                     <p class="detail mb-1 text-truncate"><strong>COMUNIDAD:</strong> {{ person.comunityName || 'N/A' }}</p>
                     <p class="detail mb-1 text-truncate"><strong>CONSEJO:</strong> {{ person.councilName || 'N/A' }}</p>
+                    <p class="detail mb-1 text-truncate"><strong>COMITÉ:</strong> {{ person.committeeName || 'N/A' }}</p>
                     <p class="detail mb-1 text-truncate"><strong>ROL:</strong> {{ person.roleName || 'SIN ROL' }}</p>
                     <p class="location mt-2 small text-muted">
                         <i class="fa-solid fa-location-dot text-danger"></i> {{ person.locality?.state || 'ZULIA' }}
@@ -132,9 +133,9 @@
 <div class="modal fade" id="assignRolesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-dark p-4">
+            <div class="modal-header bg-danger text-white p-4">
                 <h5 class="modal-title fw-bold"><i class="bi bi-shield-check me-2"></i>ASIGNAR ROLES</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div *ngIf="personSelect" class="mb-4 text-center">
@@ -156,7 +157,7 @@
                 </div>
             </div>
             <div class="modal-footer border-0 p-4 pt-0">
-                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CERRAR</button>
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CERRAR</button>
                 <button type="button" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold" (click)="saveRoles()">
                     GUARDAR CAMBIOS
                 </button>
