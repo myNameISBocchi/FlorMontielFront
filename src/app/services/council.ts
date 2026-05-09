@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 export class Council {
   
   private apiUrl = 'http://localhost/app-back/public/api/councils';
+  private apiComunity = 'http://localhost/app-back/public/api/comunities';
+  private apiCities = 'http://localhost/app-back/public/api/cities';
 
   constructor(private http:HttpClient){}
   
@@ -25,6 +27,14 @@ export class Council {
 
   delete(id:string):Observable<any>{
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+  getComunity():Observable<any>{
+    return this.http.get<any>(this.apiComunity);
+  }
+
+  getCities():Observable<any>{
+    return this.http.get<any>(this.apiCities);
   }
   
 }

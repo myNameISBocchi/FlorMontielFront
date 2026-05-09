@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Council } from '../../services/council';
-
+import { ChangeDetectorRef } from '@angular/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-council-list',
@@ -11,23 +12,36 @@ import { Council } from '../../services/council';
   templateUrl: './council-list.html',
   styleUrl: './council-list.css',
 })
-export class CouncilList {
-  councils:any = [];
+export class CouncilList implements OnInit{
+  councils:any[] = [];
   councilSelect:any = null;
+  cities:any[] = [];
+  comunities:any[] = [];
 
-  constructor(private council:Council){}
+  constructor(private council:Council, private cdr: ChangeDetectorRef){}
 
-  ngOnit(){
+  ngOnInit(): void {
+    console.log("Iniciando componente CouncilList...");
     this.getCouncils();
+    this.loadData();
+  
   }
+    
 
-  getCouncils(){
-    this.council.findAll().subscribe((res:any) => {
-      this.councils = res.results;
+  getCouncils() {
+    this.council.findAll().subscribe((res: any) => {
+      this.councils = res.results || res.result || res;
+      console.log('Consejos cargados:', this.councils);
+      this.cdr.detectChanges();
     });
   }
 
-  createCouncils(event:any){
+  loadData(){
+    this.council.getCities().subscribe(res => this.cities = res.results);
+    this.council.getComunity().subscribe(res => this.comunities = res.result);
+  }
+
+  createCouncil(event:any){
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = {
@@ -43,5 +57,76 @@ export class CouncilList {
     });
   }
 
-  
+  openEditModal(item:any){
+    console.log("Item seleccionado para editar:", item);
+    this.councilSelect = {...item};
+  }
+
+ updateCouncil() {
+  if (!this.councilSelect.councilId) {
+    alert("Error: No se encontró el ID del consejo");
+    return;
+  }
+  const dataToSend = {
+    councilName: this.councilSelect.councilName,
+    cityId: this.councilSelect.cityId,
+    comunityId: this.councilSelect.comunityId,
+    googleMaps: this.councilSelect.googleMaps
+  };
+
+  console.log("Enviando a actualizar:", dataToSend);
+
+  this.council.update(this.councilSelect.councilId, dataToSend).subscribe({
+    next: (res) => {
+      if (res.error === 1) {
+        alert("No se pudo actualizar: " + res.msg);
+      } else {
+        alert("¡Registro actualizado con éxito!");
+        this.getCouncils();
+        this.councilSelect = null;
+      }
+    },
+    error: (err) => {
+      console.error("Fallo total:", err);
+      alert("Error crítico del servidor");
+    }
+  });
+}
+
+  deleteCouncil(id: string) {
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "¡No podrás revertir esta acción!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí, eliminarlo",
+    cancelButtonText: "Cancelar"
+  }).then((result: any) => { 
+    if (result.isConfirmed) {
+      this.council.delete(id).subscribe({
+        next: () => {
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "El consejo comunal ha sido borrado.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          });
+          this.getCouncils();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo eliminar el registro.",
+            icon: "error"
+          });
+        }
+      });
+    }
+  });
+}
+
 }
