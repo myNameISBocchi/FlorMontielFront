@@ -12,12 +12,12 @@
       <div class="row g-3 justify-content-center">
         <div class="col-md-4">
           <input type="text" 
-                 class="form-control form-control-lg bg-light border-0 shadow-none fs-6" 
+                 class="form-control form-control-sm-lg bg-light border-0" 
                  placeholder="Nombre del Comité"
                  [(ngModel)]="committeeForm.committeeName">
         </div>
         <div class="col-md-4">
-          <select class="form-select form-select-lg bg-light border-0 shadow-none fs-6 text-muted" 
+          <select class="form-select form-select-sm-lg bg-light border-0" 
                   [(ngModel)]="committeeForm.parentId">
             <option [ngValue]="null">Pertenece a (Ninguno)</option>
             <option *ngFor="let c of committees" [value]="c.committeeId">
