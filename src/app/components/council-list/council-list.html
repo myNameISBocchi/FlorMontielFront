@@ -1,68 +1,76 @@
-<div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold"><i class="fa-solid fa-users-rectangle me-2"></i>GESTIONAR CONSEJO COMUNAL</h2>
-    <div class="search-box">
-      <input type="text" class="form-control rounded-pill" placeholder="Buscar...">
+<div class="container-fluid py-4 px-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
+    <h4 class="mb-0">Gestionar Consejos Comunales</h4>
+    <div style="width: 250px;">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+                <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" 
+                   class="form-control border-start-0 ps-0 rounded-end-pill" 
+                   placeholder="Buscar..." 
+                   style="box-shadow: none;">
+        </div>
+    </div>
+</div>
+
+  <div class="card shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body p-3">
+      <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">Nuevo Registro</h6>
+      <form (submit)="createCouncil($event)">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <input type="text" name="councilName" class="form-control form-control-sm bg-light border-0" placeholder="Nombre del Consejo" required>
+          </div>
+          <div class="col-md-2">
+            <select name="cityId" class="form-select form-select-sm bg-light border-0" required>
+              <option value="" disabled selected>Ciudad</option>
+              <option *ngFor="let city of cities" [value]="city.cityId">{{ city.cityName }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select name="comunityId" class="form-select form-select-sm bg-light border-0" required>
+              <option value="" disabled selected>Comunidad</option>
+              <option *ngFor="let com of comunities" [value]="com.comunityId">{{ com.comunityName }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="text" name="googleMaps" class="form-control form-control-sm bg-light border-0" placeholder="URL Ubicación">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-dark btn-sm w-100 fw-bold shadow-sm">
+              <i class="fa-solid fa-save me-2"></i>Guardar
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
-  
-  <div class="card shadow-sm border-0 p-4 mb-5 bg-white">
-    <h5 class="fw-bold mb-3 text-uppercase" style="font-size: 0.9rem; letter-spacing: 1px;">Nuevo Registro</h5>
-    <form (submit)="createCouncil($event)">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <input type="text" name="councilName" class="form-control bg-light border-0 py-2" placeholder="Nombre del Consejo" required>
-        </div>
-        <div class="col-md-2">
-          <select name="cityId" class="form-select bg-light border-0 py-2" required>
-            <option value="" disabled selected>Ciudad</option>
-            <option *ngFor="let city of cities" [value]="city.cityId">{{ city.cityName }}</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select name="comunityId" class="form-select bg-light border-0 py-2" required>
-            <option value="" disabled selected>Comunidad</option>
-            <option *ngFor="let com of comunities" [value]="com.comunityId">{{ com.comunityName }}</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <input type="text" name="googleMaps" class="form-control bg-light border-0 py-2" placeholder="URL Ubicación">
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-dark w-100 fw-bold py-2 shadow-sm">
-            <i class="fa-solid fa-save me-2"></i>Guardar
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-
- 
   <div class="card shadow-sm border-0" *ngIf="councils && councils.length > 0; else noData">
     <div class="table-responsive">
-      <table class="table table-hover mb-0 text-center">
-        <thead class="bg-light">
+      <table class="table table-hover mb-0 text-center align-middle" style="font-size: 0.85rem;">
+        <thead class="bg-light text-muted text-uppercase">
           <tr>
-            <th class="py-3">Nombre</th>
-            <th class="py-3">Comunidad</th>
-            <th class="py-3">Ubicación</th>
-            <th class="py-3">Acciones</th>
+            <th class="py-2 border-0">Nombre</th>
+            <th class="py-2 border-0">Comunidad</th>
+            <th class="py-2 border-0">Ubicación</th>
+            <th class="py-2 border-0">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of councils">
-            <td class="align-middle text-uppercase small fw-bold">{{item.councilName}}</td>
-            <td class="align-middle">{{item.comunityName}}</td>
-            <td class="align-middle">
-                <a *ngIf="item.googleMaps" [href]="item.googleMaps" target="_blank" class="btn btn-sm btn-light rounded-pill">Ver mapa</a>
+            <td class="small fw-bold text-dark">{{item.councilName}}</td>
+            <td class="text-muted">{{item.comunityName}}</td>
+            <td>
+                <a *ngIf="item.googleMaps" [href]="item.googleMaps" target="_blank" class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2" style="font-size: 0.75rem;">Ver mapa</a>
                 <span *ngIf="!item.googleMaps" class="text-muted small">N/A</span>
             </td>
-            <td class="align-middle">
-              <button class="btn btn-link text-primary p-0 me-3" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
+            <td>
+              <button class="btn btn-link text-primary btn-sm p-0 me-2" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button class="btn btn-link text-danger p-0" (click)="deleteCouncil(item.councilId)">
+              <button class="btn btn-link text-danger btn-sm p-0" (click)="deleteCouncil(item.councilId)">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -73,44 +81,43 @@
   </div>
 
   <ng-template #noData>
-    <div class="text-center py-5 bg-white rounded shadow-sm border">
-        <i class="fa-solid fa-folder-open fa-3x text-muted mb-3"></i>
-        <p class="text-muted mb-0">No se encontraron consejos registrados actualmente.</p>
+    <div class="text-center py-4 bg-white rounded shadow-sm border">
+        <i class="fa-solid fa-folder-open fa-2x text-light mb-2"></i>
+        <p class="text-muted small mb-0">No se encontraron consejos registrados actualmente.</p>
     </div>
   </ng-template>
 </div>
 
-
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title">Editar Consejo</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title">Editar Consejo</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 0.7rem;"></button>
       </div>
-      <div class="modal-body p-4" *ngIf="councilSelect">
-        <div class="mb-3">
-          <label class="form-label small fw-bold">Nombre del Consejo</label>
-          <input type="text" name="editName" class="form-control" [(ngModel)]="councilSelect.councilName">
+      <div class="modal-body p-3" *ngIf="councilSelect">
+        <div class="mb-2">
+          <label class="form-label mb-1" style="font-size: 0.75rem; font-weight: 600;">Nombre</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="councilSelect.councilName">
         </div>
-        <div class="mb-3">
-          <label class="form-label small fw-bold">Ciudad</label>
-          <select name="editCity" class="form-select" [(ngModel)]="councilSelect.cityId">
+        <div class="mb-2">
+          <label class="form-label mb-1" style="font-size: 0.75rem; font-weight: 600;">Ciudad</label>
+          <select class="form-select form-select-sm" [(ngModel)]="councilSelect.cityId">
             <option *ngFor="let city of cities" [value]="city.cityId">{{ city.cityName }}</option>
           </select>
         </div>
-        <div class="mb-3">
-          <label class="form-label small fw-bold">Comunidad</label>
-          <select name="editComunity" class="form-select" [(ngModel)]="councilSelect.comunityId">
+        <div class="mb-2">
+          <label class="form-label mb-1" style="font-size: 0.75rem; font-weight: 600;">Comunidad</label>
+          <select class="form-select form-select-sm" [(ngModel)]="councilSelect.comunityId">
             <option *ngFor="let com of comunities" [value]="com.comunityId">{{ com.comunityName }}</option>
           </select>
         </div>
         <div class="mb-3">
-          <label class="form-label small fw-bold">Google Maps (URL)</label>
-          <input type="text" name="editMaps" class="form-control" [(ngModel)]="councilSelect.googleMaps">
+          <label class="form-label mb-1" style="font-size: 0.75rem; font-weight: 600;">URL Maps</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="councilSelect.googleMaps">
         </div>
-        <button class="btn btn-dark w-100 fw-bold py-2 mt-2" (click)="updateCouncil()" data-bs-dismiss="modal">
-          <i class="fa-solid fa-rotate me-2"></i>Actualizar Registro
+        <button class="btn btn-dark btn-sm w-100 fw-bold" (click)="updateCouncil()" data-bs-dismiss="modal">
+          <i class="fa-solid fa-rotate me-1"></i>Actualizar
         </button>
       </div>
     </div>

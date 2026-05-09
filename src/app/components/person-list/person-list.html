@@ -1,14 +1,20 @@
 <div class="container-fluid px-3 px-md-4 py-3">
-    <div class="row mb-4">
-        <div class="col-12 col-md-6 mx-auto">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0">
-                    <i class="fas fa-search text-muted"></i>
-                </span>
-                <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Buscar vocero..." style="box-shadow: none;">
-            </div>
+   <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
+    <h4 class="mb-0">Gestión de Voceros</h4>
+    <div style="width: 250px;">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+                <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" 
+                   class="form-control border-start-0 ps-0 rounded-end-pill" 
+                   [(ngModel)]="searchTerm" 
+                   (input)="onSearch()" 
+                   placeholder="Buscar vocero..." 
+                   style="box-shadow: none;">
         </div>
     </div>
+</div>
 
     <div class="row mb-3">
         <div class="col-12 text-end">
@@ -26,18 +32,16 @@
                          [alt]="person.firstName"
                          (error)="handleImageError($event)">
                 </div>
-
                 <div class="card-info p-3">
                     <h5 class="title fw-bold mb-1">{{ person.firstName }} {{ person.lastName }}</h5>
-                    <p class="detail mb-1 text-truncate"><strong>COMUNIDAD:</strong> {{ person.comunityName || 'N/A' }}</p>
-                    <p class="detail mb-1 text-truncate"><strong>CONSEJO:</strong> {{ person.councilName || 'N/A' }}</p>
-                    <p class="detail mb-1 text-truncate"><strong>COMITÉ:</strong> {{ person.committeeName || 'N/A' }}</p>
-                    <p class="detail mb-1 text-truncate"><strong>ROL:</strong> {{ person.roleName || 'SIN ROL' }}</p>
+                    <p class="detail mb-1"><strong>COMUNIDAD:  </strong> <strong>{{ person.comunityName || 'N/A' }}</strong></p>
+                    <p class="detail mb-1 text-truncate"><strong>CONSEJO:  </strong> <strong>{{ person.councilName || 'N/A' }}</strong></p>
+                    <p class="detail mb-1"><strong>COMITÉ:  </strong> <strong>{{ person.committeeName || 'N/A' }}</strong></p>
+                    <p class="detail mb-1 text-truncate"><strong>ROL:  </strong><strong> {{ person.roleName || 'SIN ROL' }}</strong></p>
                     <p class="location mt-2 small text-muted">
                         <i class="fa-solid fa-location-dot text-danger"></i> {{ person.locality?.state || 'ZULIA' }}
                     </p>
                 </div>
-
                 <div class="card-actions border-top d-flex justify-content-around p-2 bg-light">
                     <button class="action-btn edit text-primary border-0 bg-transparent" 
                             data-bs-toggle="modal" 
@@ -46,7 +50,6 @@
                             title="Editar Datos">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </button>
-
                     <button class="action-btn text-warning border-0 bg-transparent"
                             data-bs-toggle="modal"
                             data-bs-target="#assignRolesModal"
@@ -54,12 +57,10 @@
                             title="Asignar Roles">
                         <i class="bi bi-shield-lock-fill"></i>
                     </button>
-
                     <label [for]="'file-' + person.personId" class="action-btn view text-success border-0 bg-transparent m-0" style="cursor: pointer;" title="Cambiar Foto">
                         <i class="bi bi-card-image"></i>
                     </label>
                     <input type="file" [id]="'file-' + person.personId" hidden (change)="onFileSelected($event, person.personId)">
-                    
                     <button class="action-btn delete text-danger border-0 bg-transparent" 
                             (click)="deletePerson(person.personId)"
                             title="Eliminar Registro">
@@ -78,7 +79,6 @@
                 <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2"></i>ACTUALIZAR DATOS DEL VOCERO</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
             <form *ngIf="personSelect" (submit)="updatePerson()">
                 <div class="modal-body p-4 bg-light">
                     <div class="row g-3">
@@ -118,7 +118,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-footer border-0 p-4 pt-0 bg-light">
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CANCELAR</button>
                     <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold">

@@ -1,1 +1,94 @@
-<p>committee-list works!</p>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
+    <h4 class="mb-0">Gestionar Comités</h4>
+  </div>
+
+  <div class="mb-2">
+    <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Nuevo Registro</span>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body">
+      <div class="row g-3 justify-content-center">
+        <div class="col-md-4">
+          <input type="text" 
+                 class="form-control form-control-lg bg-light border-0 shadow-none fs-6" 
+                 placeholder="Nombre del Comité"
+                 [(ngModel)]="committeeForm.committeeName">
+        </div>
+        <div class="col-md-4">
+          <select class="form-select form-select-lg bg-light border-0 shadow-none fs-6 text-muted" 
+                  [(ngModel)]="committeeForm.parentId">
+            <option [ngValue]="null">Pertenece a (Ninguno)</option>
+            <option *ngFor="let c of committees" [value]="c.committeeId">
+              {{ c.committeeName }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-dark btn-lg w-100 fs-6 fw-bold" (click)="createCommittee()">
+            Registrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive shadow-sm rounded border-0">
+    <table class="table table-hover align-middle mb-0 bg-white">
+      <thead class="bg-light">
+        <tr>
+          <th class="py-3 px-4 border-0">Nombre</th>
+          <th class="py-3 border-0">Tipo</th>
+          <th class="py-3 text-center border-0">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="border-top-0">
+        <tr *ngFor="let item of committees">
+          <td class="px-4 border-0">{{ item.committeeName }}</td>
+          <td class="border-0">
+            <span [class]="item.parentId ? 'badge bg-info' : 'badge bg-secondary'">
+              {{ item.parentId ? 'Subcomité' : 'Principal' }}
+            </span>
+          </td>
+          <td class="text-center border-0">
+            <button class="btn btn-link text-dark p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-link text-danger p-0" (click)="deleteCommittee(item.committeeId)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalUpdate" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">Actualizar Registro</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label small text-muted">Nombre del Comité</label>
+          <input type="text" class="form-control mb-3 bg-light border-0" [(ngModel)]="committeeForm.committeeName">
+          <label class="form-label small text-muted">Cambiar Comité Padre</label>
+          <select class="form-select bg-light border-0" [(ngModel)]="committeeForm.parentId">
+            <option [ngValue]="null">Ninguno (Principal)</option>
+            <option *ngFor="let c of committees" [value]="c.committeeId">
+              {{ c.committeeName }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetForm()">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="updateCommittee()" data-bs-dismiss="modal">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
