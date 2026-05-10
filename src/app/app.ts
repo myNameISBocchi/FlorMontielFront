@@ -14,7 +14,7 @@ import { filter } from 'rxjs/operators';
 })
 export class App implements OnInit {
  
-  private authService = inject(Auth);
+  public authService = inject(Auth);
   private personService = inject(Person);
   public router = inject(Router);
   private cdr = inject(ChangeDetectorRef);

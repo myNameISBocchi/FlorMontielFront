@@ -11,11 +11,12 @@
             <input type="text" 
                    class="form-control border-start-0 ps-0 rounded-end-pill" 
                    placeholder="Buscar..." 
-                   style="box-shadow: none;">
+                   style="box-shadow: none;"
+                   >
         </div>
     </div>
 </div>
-
+@if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() ==='LIDER DE COMUNA'){
   <div class="card border-0 shadow-sm mb-5">
     <div class="card-body p-4">
       <h5 class="fw-bold mb-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
@@ -41,6 +42,7 @@
     </div>
   </div>
 
+}
   <div class="row">
     @for(item of comunity; track item.comunityId) {
       <div class="col-auto mb-4">
@@ -55,12 +57,12 @@
             </p>
           </div>
           <div class="card-actions">
-            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
               <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
             }
-            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
               <label [for]="'file-' + item.comunityId" class="action-btn view">
              <i class="fa-solid fa-camera"></i>
             </label>
@@ -68,7 +70,7 @@
             }
             
             <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
-            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() ==='LIDER DE COMUNA'){
               <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
               <i class="fa-solid fa-trash-can"></i>
             </button>

@@ -1,12 +1,11 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
-    <h4 class="mb-0">Gestionar Comités</h4>
+    <h4 class="mb-0">Gestion De Comités</h4>
   </div>
-
-  <div class="mb-2">
+  @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+    <div class="mb-2">
     <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Nuevo Registro</span>
   </div>
-
   <div class="card shadow-sm border-0 mb-4 bg-white">
     <div class="card-body">
       <div class="row g-3 justify-content-center">
@@ -14,7 +13,8 @@
           <input type="text" 
                  class="form-control form-control-sm-lg bg-light border-0" 
                  placeholder="Nombre del Comité"
-                 [(ngModel)]="committeeForm.committeeName">
+                 [(ngModel)]="committeeForm.committeeName"
+                 >
         </div>
         <div class="col-md-4">
           <select class="form-select form-select-sm-lg bg-light border-0" 
@@ -32,15 +32,19 @@
         </div>
       </div>
     </div>
-  </div>
-
+  </div> 
+  }
+  
   <div class="table-responsive shadow-sm rounded border-0">
     <table class="table table-hover align-middle mb-0 bg-white">
       <thead class="bg-light">
         <tr>
           <th class="py-3 px-4 border-0">Nombre</th>
           <th class="py-3 border-0">Tipo</th>
-          <th class="py-3 text-center border-0">Acciones</th>
+          @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+<th class="py-3 text-center border-0">Acciones</th>
+          }
+          
         </tr>
       </thead>
       <tbody class="border-top-0">
@@ -52,12 +56,17 @@
             </span>
           </td>
           <td class="text-center border-0">
-            <button class="btn btn-link text-dark p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              <button class="btn btn-link text-dark p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-link text-danger p-0" (click)="deleteCommittee(item.committeeId)">
+            }
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              <button class="btn btn-link text-danger p-0" (click)="deleteCommittee(item.committeeId)">
               <i class="bi bi-trash"></i>
             </button>
+            }
+            
           </td>
         </tr>
       </tbody>

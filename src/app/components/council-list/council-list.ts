@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Council } from '../../services/council';
 import { ChangeDetectorRef } from '@angular/core';
+import { Auth } from '../../services/auth';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -17,6 +18,7 @@ export class CouncilList implements OnInit {
   councilSelect: any = null;
   cities: any[] = [];
   comunities: any[] = [];
+  public authService = inject(Auth);
 
   constructor(private council: Council, private cdr: ChangeDetectorRef) {}
 

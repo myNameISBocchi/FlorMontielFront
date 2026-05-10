@@ -22,11 +22,17 @@
                         <i class="fa-solid fa-people-group me-2"></i>Gestionar Comunidad
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                    <li class="nav-item">
+                        @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
                     <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
                         <i class="fa-solid fa-user-group me-3"></i>Gestionar Voceros
                     </a>
+                }
                 </li>
+
+                
+                
                 <li class="nav-item">
                     <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
                         <i class="fa-solid fa-handshake-angle me-2"></i>Gestionar Consejos

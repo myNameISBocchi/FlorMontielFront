@@ -14,6 +14,7 @@
     </div>
 </div>
 
+@if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
   <div class="card shadow-sm border-0 mb-4 bg-white">
     <div class="card-body p-3">
       <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">Nuevo Registro</h6>
@@ -46,6 +47,8 @@
       </form>
     </div>
   </div>
+}
+  
 
   <div class="card shadow-sm border-0" *ngIf="councils && councils.length > 0; else noData">
     <div class="table-responsive">
@@ -54,7 +57,9 @@
           <tr>
             <th class="py-2 border-0">Nombre</th>
             <th class="py-2 border-0">Comunidad</th>
-            <th class="py-2 border-0">Ubicación</th>
+            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              <th class="py-2 border-0">Ubicación</th>
+            }
             <th class="py-2 border-0">Acciones</th>
           </tr>
         </thead>
@@ -67,12 +72,17 @@
                 <span *ngIf="!item.googleMaps" class="text-muted small">N/A</span>
             </td>
             <td>
-              <button class="btn btn-link text-primary btn-sm p-0 me-2" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
+              @if(authService.getRole()=== 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+                <button class="btn btn-link text-primary btn-sm p-0 me-2" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button class="btn btn-link text-danger btn-sm p-0" (click)="deleteCouncil(item.councilId)">
+              }
+              @if(authService.getRole() ==='ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+                <button class="btn btn-link text-danger btn-sm p-0" (click)="deleteCouncil(item.councilId)">
                 <i class="fa-solid fa-trash"></i>
               </button>
+              }
+              
             </td>
           </tr>
         </tbody>

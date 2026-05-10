@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { Committee } from '../../services/committee';
+import { Auth } from '../../services/auth';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 export class CommitteeList implements OnInit {
   private committeeService = inject(Committee);
   private cdr = inject(ChangeDetectorRef);
+  public authService = inject(Auth);
 
   committees: any[] = [];
 
