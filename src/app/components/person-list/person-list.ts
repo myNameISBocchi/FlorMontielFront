@@ -3,6 +3,7 @@ import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-person-list',
@@ -47,7 +48,9 @@ export class PersonList implements OnInit {
         this.filteredPeoples = data.results || [];
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error:', err)
+      error: (err) => {
+        console.error('Error:', err);
+      }
     });
   }
 
@@ -106,7 +109,12 @@ export class PersonList implements OnInit {
 
     this.personService.assignRoles(this.personSelect.personId, rolesToSave).subscribe({
       next: () => {
-        alert("Roles actualizados correctamente");
+        Swal.fire({
+          icon: 'success',
+          title: 'Roles actualizados',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.loadPeoples();
         const modalElement = document.getElementById('assignRolesModal');
         if (modalElement) {
@@ -114,20 +122,39 @@ export class PersonList implements OnInit {
           if (bootstrapModal) bootstrapModal.hide();
         }
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        Swal.fire('Error', 'No se pudieron asignar los roles', 'error');
+      }
     });
   }
 
   deletePerson(id: string) {
-    if (confirm("deseas eliminar este registro?")) {
-      this.personService.deletePerson(id).subscribe({
-        next: () => {
-          alert("eliminado con exito!");
-          this.loadPeoples();
-        },
-        error: (err) => console.error("error:", err)
-      })
-    }
+    Swal.fire({
+      title: "¿Deseas eliminar este registro?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.personService.deletePerson(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'Registro eliminado con éxito',
+              timer: 2000,
+              showConfirmButton: false
+            });
+            this.loadPeoples();
+          },
+          error: (err) => Swal.fire('Error', 'No se pudo eliminar el registro', 'error')
+        });
+      }
+    });
   }
 
   onFileSelected(event: any, id: string) {
@@ -138,13 +165,16 @@ export class PersonList implements OnInit {
 
       this.personService.uploadPhoto(id, formData).subscribe({
         next: (res) => {
-          alert("Imagen actualizado con exito");
+          Swal.fire({
+            icon: 'success',
+            title: 'Imagen actualizada',
+            timer: 1500,
+            showConfirmButton: false
+          });
           this.loadPeoples();
           this.cdr.detectChanges();
         },
-        error: (err) => {
-          console.error("error", err)
-        }
+        error: (err) => Swal.fire('Error', 'Error al subir la imagen', 'error')
       });
     }
   }
@@ -169,7 +199,13 @@ export class PersonList implements OnInit {
 
     this.personService.updatePerson(id, dataToUpdate).subscribe({
       next: () => {
-        alert("¡Registro actualizado con éxito!");
+        Swal.fire({
+          icon: 'success',
+          title: '¡Actualizado!',
+          text: 'Registro actualizado con éxito',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.loadPeoples();
         this.personSelect = null;
         const modalElement = document.getElementById('editPersonModal');
@@ -179,8 +215,7 @@ export class PersonList implements OnInit {
         }
       },
       error: (err) => {
-        console.error("Error:", err);
-        alert("No se pudo actualizar el registro.");
+        Swal.fire('Error', 'No se pudo actualizar el registro', 'error');
       }
     });
   }

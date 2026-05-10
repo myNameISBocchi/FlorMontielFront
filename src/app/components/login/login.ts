@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from "@angular/forms";
 import { Auth } from "../../services/auth"; 
 import { Router } from "@angular/router"; 
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -37,14 +38,23 @@ export class Login {
               localStorage.setItem('personId', data.personId.toString());
             }
 
-            console.log('¡Login exitoso!', data);
-            
-            window.location.href = '/home';
+            Swal.fire({
+              icon: 'success',
+              title: '¡Bienvenido!',
+              text: 'Login exitoso',
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = '/home';
+            });
           }
         },
         error: (err) => {
-          console.error('Error en el login:', err);
-          alert('Credenciales incorrectas o error de conexión con el servidor.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de acceso',
+            text: 'Credenciales incorrectas o error de conexión con el servidor'
+          });
         }
       });
     } else {

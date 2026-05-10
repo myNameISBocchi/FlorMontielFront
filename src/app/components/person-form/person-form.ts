@@ -3,6 +3,7 @@ import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Person } from '../../services/person';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-person-form',
@@ -109,15 +110,30 @@ export class PersonForm implements OnInit {
 
       this.personService.createPerson(data).subscribe({
         next: (res) => {
-          alert('Registro exitoso: ' + res.msg);
-          this.router.navigate(['/person']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Registro exitoso',
+            text: res.msg,
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
+            this.router.navigate(['/person']);
+          });
         },
         error: (err) => {
-          alert('Error: ' + (err.error?.msg || 'Error en el servidor'));
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.error?.msg || 'Error en el servidor'
+          });
         }
       });
     } else {
-      alert('Por favor, completa todos los campos obligatorios');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor, completa todos los campos obligatorios'
+      });
     }
   }
 }
