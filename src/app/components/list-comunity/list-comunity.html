@@ -55,16 +55,24 @@
             </p>
           </div>
           <div class="card-actions">
-            <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
+            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+              <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <label [for]="'file-' + item.comunityId" class="action-btn view">
+            }
+            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+              <label [for]="'file-' + item.comunityId" class="action-btn view">
              <i class="fa-solid fa-camera"></i>
             </label>
+
+            }
+            
             <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
-            <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
+            @if(authService.getRole() === 'ADMINISTRADOR' || 'LIDER DE COMUNA'){
+              <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
               <i class="fa-solid fa-trash-can"></i>
             </button>
+            }
           </div>
         </div>
       </div>
@@ -77,7 +85,9 @@
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-secondary text-white">
         <h5 class="modal-title fw-bold" id="editModalLabel">Actualizar Comunidad</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+        </button>
+        
       </div>
       <form *ngIf="comunitySelect" (submit)="updateComunity($event)">
         <div class="modal-body p-4">

@@ -13,11 +13,32 @@ export const routes: Routes = [
     { path: 'login', component: Login, canActivate: [publicGuard] },
     
     { path: 'home', component: Home, canActivate: [authGuard] },
-    { path: 'person', component: PersonList, canActivate: [authGuard] },
-    { path: 'personForm', component: PersonForm, canActivate: [authGuard] },
-    { path: 'comunity', component: ListComunity, canActivate: [authGuard] },
-    { path: 'council', component: CouncilList, canActivate: [authGuard]},
-    { path: 'committee', component: CommitteeList, canActivate:[authGuard]},
+
+    {   path: 'person', component: PersonList,
+        canActivate: [authGuard],
+        data: {roles: ['ADMINISTRADOR', 'LIDER DE COMUNA']} 
+    },
+
+    {    path: 'personForm',component: PersonForm,
+        canActivate: [authGuard],
+        data:{roles:['ADMINISTRADOR', 'LIDER DE COMUNA']} 
+    },
+
+    { path: 'comunity', component: ListComunity,
+         canActivate: [authGuard],
+        data:{roles:['ADMINISTRADOR', 'LIDER DE COMUNA', 'VOCERO']}
+     },
+
+    {   path: 'council', component: CouncilList,
+         canActivate: [authGuard],
+        data:{roles:['ADMINISTRADOR', 'LIDER DE COMUNA', 'VOCERO']}
+    },
+    
+    { path: 'committee', component: CommitteeList,
+         canActivate:[authGuard],
+        data:{roles:['ADMINISTRADOR','LIDER DE COMUNA', 'VOCERO']}
+    },
+         
     
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/login' } 

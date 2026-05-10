@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Comunity } from '../../services/comunity';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Auth } from '../../services/auth';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,6 +16,7 @@ export class ListComunity implements OnInit {
 
   private comunityService = inject(Comunity);
   private cdr = inject(ChangeDetectorRef);
+  public authService = inject(Auth);
 
   comunity: any[] = [];
   comunitySelect: any = null;

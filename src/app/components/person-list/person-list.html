@@ -43,6 +43,7 @@
                     </p>
                 </div>
                 <div class="card-actions border-top d-flex justify-content-around p-2 bg-light">
+        
                     <button class="action-btn edit text-primary border-0 bg-transparent" 
                             data-bs-toggle="modal" 
                             data-bs-target="#editPersonModal" 
@@ -50,22 +51,28 @@
                             title="Editar Datos">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </button>
-                    <button class="action-btn text-warning border-0 bg-transparent"
+                    @if(authService.getRole() === 'ADMINISTRADOR'){
+                        <button class="action-btn text-warning border-0 bg-transparent"
                             data-bs-toggle="modal"
                             data-bs-target="#assignRolesModal"
                             (click)="openEditModal(person)"
                             title="Asignar Roles">
                         <i class="bi bi-shield-lock-fill"></i>
                     </button>
+                    }
+                    
                     <label [for]="'file-' + person.personId" class="action-btn view text-success border-0 bg-transparent m-0" style="cursor: pointer;" title="Cambiar Foto">
                         <i class="bi bi-card-image"></i>
                     </label>
                     <input type="file" [id]="'file-' + person.personId" hidden (change)="onFileSelected($event, person.personId)">
-                    <button class="action-btn delete text-danger border-0 bg-transparent" 
+                    @if(authService.getRole()==='ADMINISTRADOR'){
+                        <button class="action-btn delete text-danger border-0 bg-transparent" 
                             (click)="deletePerson(person.personId)"
                             title="Eliminar Registro">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
+                    }
+                    
                 </div>
             </div>
         </div>

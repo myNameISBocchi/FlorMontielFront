@@ -3,6 +3,7 @@ import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Auth } from '../../services/auth';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,6 +17,7 @@ export class PersonList implements OnInit {
   private router = inject(Router);
   private personService = inject(Person);
   private cdr = inject(ChangeDetectorRef);
+  public authService = inject(Auth);
 
   peoples: any[] = [];
   filteredPeoples: any[] = [];
