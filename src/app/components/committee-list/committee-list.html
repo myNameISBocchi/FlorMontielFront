@@ -57,13 +57,13 @@
           </td>
           <td class="text-center border-0">
             @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
-              <button class="btn btn-link text-dark p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
-              <i class="bi bi-pencil"></i>
+              <button class="btn btn-link text-primary p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
+              <i class="fa-solid fa-pen-to-square"></i>
             </button>
             }
             @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
               <button class="btn btn-link text-danger p-0" (click)="deleteCommittee(item.committeeId)">
-              <i class="bi bi-trash"></i>
+              <i class="fa-solid fa-trash-can"></i>
             </button>
             }
             
