@@ -1,9 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
+import { ReportService } from '../../services/report';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,11 +16,12 @@ import Swal from 'sweetalert2';
   templateUrl: './person-list.html',
   styleUrl: './person-list.css',
 })
-export class PersonList implements OnInit {
+export class PersonList implements OnInit, OnDestroy {
   private router = inject(Router);
   private personService = inject(Person);
   private cdr = inject(ChangeDetectorRef);
   public authService = inject(Auth);
+  private reportService = inject(ReportService);
 
   peoples: any[] = [];
   filteredPeoples: any[] = [];
@@ -29,18 +33,66 @@ export class PersonList implements OnInit {
   city: any[] = [];
   roles: any[] = []; 
   selectedRolesMap: { [key: string]: boolean } = {};
+  selectedCouncilId: string | null = null;
+
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
   ngOnInit(): void {
     this.loadPeoples();
+
+   
     this.cargarCatalogos();
+  
+    
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.executeSearch(term);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  onSearch() {
+    this.searchSubject.next(this.searchTerm.trim());
+  }
+
+  executeSearch(data: string) {
+    if (!data) {
+      this.filteredPeoples = [...this.peoples];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.personService.searchPeople(data).subscribe({
+      next: (res: any) => {
+        const results = Array.isArray(res) ? res : (res.results || []);
+        setTimeout(() => {
+          this.filteredPeoples = results;
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: (err) => {
+        console.error('error', err);
+        setTimeout(() => {
+          this.filteredPeoples = [];
+          this.cdr.detectChanges();
+        }, 0);
+      }
+    });
   }
 
   cargarCatalogos() {
-    this.personService.getRoles().subscribe(res => this.roles = res.results || res);
-    this.personService.getComunity().subscribe(res => this.comunity = res.result || res.results || res);
-    this.personService.getCouncil().subscribe(res => this.council = res.result || res.results || res);
-    this.personService.getCommitte().subscribe(res => this.committee = res.result || res.results || res);
-    this.personService.getCity().subscribe(res => this.city = res.results || res.result || res);
+    this.personService.getRoles().subscribe(res => this.roles = res?.results || res || []);
+  this.personService.getComunity().subscribe(res => this.comunity = res?.result || res?.results || res || []);
+  this.personService.getCouncil().subscribe(res => this.council = res?.result || res?.results || res || []);
+  this.personService.getCommitte().subscribe(res => this.committee = res?.result || res?.results || res || []);
+  this.personService.getCity().subscribe(res => this.city = res?.results || res?.result || res || []);
   }
 
   loadPeoples() {
@@ -74,25 +126,6 @@ export class PersonList implements OnInit {
         this.selectedRolesMap[id] = true;
       });
     }
-  }
-
-  onSearch() {
-    const data = this.searchTerm.trim();
-    if (!data) {
-      this.filteredPeoples = this.peoples;
-      return;
-    }
-
-    this.personService.searchPeople(data).subscribe({
-      next: (res: any) => {
-        this.filteredPeoples = res.results || [];
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('error', err);
-        this.filteredPeoples = [];
-      }
-    });
   }
 
   isRoleSelected(roleId: string): boolean {
@@ -225,4 +258,31 @@ export class PersonList implements OnInit {
   handleImageError(event: any) {
     event.target.src = 'assets/img/default-avatar.png';
   }
+
+  generarReporteGeneral() {
+    const filtros: any = {};
+    if (this.selectedCouncilId) {
+        filtros.councilId = this.selectedCouncilId;
+    }
+    if (this.searchTerm) {
+        filtros.firstName = this.searchTerm.trim();
+    }
+
+    this.reportService.imprimirVoceros(filtros).subscribe({
+        next: (data: Blob) => {
+            const blob = new Blob([data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Reporte_General_Voceros_${new Date().getTime()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+            console.error('Error al descargar el reporte:', err);
+        }
+    });
+}
 }

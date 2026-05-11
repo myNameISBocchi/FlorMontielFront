@@ -1,20 +1,34 @@
 <div class="container-fluid px-3 px-md-4 py-3">
-   <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
-    <h4 class="mb-0">Gestión de Voceros</h4>
-    <div style="width: 250px;">
-        <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
-                <i class="fas fa-search text-muted"></i>
-            </span>
-            <input type="text" 
-                   class="form-control border-start-0 ps-0 rounded-end-pill" 
-                   [(ngModel)]="searchTerm" 
-                   (input)="onSearch()" 
-                   placeholder="Buscar vocero..." 
-                   style="box-shadow: none;">
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
+        <h4 class="mb-0">Gestión de Voceros</h4>
+        
+        <div class="d-flex gap-2 align-items-center">
+            <div style="width: 200px;">
+                <select class="form-select form-select-sm rounded-pill shadow-sm" [(ngModel)]="selectedCouncilId" name="filterCouncil">
+                    <option [value]="null">Todos los Consejos</option>
+                    <option *ngFor="let c of council" [value]="c.councilId">{{ c.councilName }}</option>
+                </select>
+            </div>
+
+            <div style="width: 250px;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control border-start-0 ps-0 rounded-end-pill" 
+                           [(ngModel)]="searchTerm" 
+                           (input)="onSearch()" 
+                           placeholder="Buscar vocero..." 
+                           style="box-shadow: none;">
+                </div>
+            </div>
+
+            <button class="btn btn-dark btn-sm rounded-circle shadow-sm" (click)="generarReporteGeneral()" title="Imprimir Reporte">
+                <i class="fas fa-print"></i>
+            </button>
         </div>
     </div>
-</div>
 
     <div class="row mb-3">
         <div class="col-12 text-end">
@@ -43,7 +57,6 @@
                     </p>
                 </div>
                 <div class="card-actions border-top d-flex justify-content-around p-2 bg-light">
-        
                     <button class="action-btn edit text-primary border-0 bg-transparent" 
                             data-bs-toggle="modal" 
                             data-bs-target="#editPersonModal" 
@@ -72,7 +85,6 @@
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                     }
-                    
                 </div>
             </div>
         </div>
