@@ -12,6 +12,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
 }
 
 .img-wrapper {
@@ -95,4 +96,8 @@
 
 .action-btn:hover {
     background-color: #f9f9f9;
+}
+.row {
+    margin-right: 0;
+    margin-left: 0;
 }

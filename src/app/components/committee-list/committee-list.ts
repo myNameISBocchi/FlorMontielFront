@@ -18,6 +18,11 @@ export class CommitteeList implements OnInit {
   public authService = inject(Auth);
 
   committees: any[] = [];
+  pagedCommittees:any[] = [];
+  currentPage:number = 1;
+  perPage:number = 6;
+  totalPages:number = 1;
+
 
   committeeForm = {
     committeeId: '',
@@ -33,12 +38,29 @@ export class CommitteeList implements OnInit {
     this.committeeService.getCommittee().subscribe({
       next: (res) => {
         this.committees = res.result;
+        this.updatePagination();
+        this.currentPage = 1;
         this.cdr.detectChanges();
       },
       error: (err) => {
         Swal.fire('Error', 'Error al cargar comités', 'error');
       }
     });
+  }
+
+  updatePagination(){
+    this.totalPages = Math.ceil(this.committees.length / this.perPage);
+    const startIndex = (this.currentPage -1) * this.perPage;
+    const endIndex = startIndex + this.perPage;
+    this.pagedCommittees = this.committees.slice(startIndex,endIndex);
+  }
+
+  goTopage(page:number){
+    if(page >= 1 && page <= this.totalPages){
+      this.currentPage = page;
+      this.updatePagination();
+    }
+
   }
 
   createCommittee() {

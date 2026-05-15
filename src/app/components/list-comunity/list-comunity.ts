@@ -20,6 +20,10 @@ export class ListComunity implements OnInit {
 
   comunity: any[] = [];
   comunitySelect: any = null;
+  pagedComunity:any[] = [];
+  currentPage:number = 1;
+  perPage:number = 8;
+  totalPages:number = 1;
 
   ngOnInit(): void {
     this.getComunity();
@@ -29,12 +33,28 @@ export class ListComunity implements OnInit {
     this.comunityService.getComunity().subscribe({
       next: (data: any) => {
         this.comunity = data.result;
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al traer datos:', err);
       }
     });
+  }
+
+  updatePagination(){
+    this.totalPages = Math.ceil(this.comunity.length / this.perPage);
+    const startIndex = (this.currentPage - 1) * this.perPage;
+    const endIndex = startIndex + this.perPage;
+
+    this.pagedComunity = this.comunity.slice(startIndex,endIndex);
+  }
+
+  goToPage(page:number){
+    if(page >= 1 && page <= this.totalPages){
+      this.currentPage = page;
+      this.updatePagination();
+    }
   }
 
   deleteComunity(id: number) {

@@ -43,9 +43,9 @@
   </div>
 
 }
-  <div class="row">
-    @for(item of comunity; track item.comunityId) {
-      <div class="col-auto mb-4">
+  <div class="row g-4">
+    @for(item of pagedComunity; track item.comunityId) {
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex mb-4">
         <div class="comunity-card">
           <div class="img-wrapper">
             <img [src]="item.photoComunity? 'http://localhost/app-back/public/' + item.photoComunity: '/img/comunityDefault.png'" alt="comunidad">
@@ -80,6 +80,30 @@
       </div>
     }
   </div>
+
+  <nav class="mt-4" *ngIf="totalPages > 1">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage - 1)" style="cursor: pointer;">Anterior</a>
+    </li>
+
+    <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index">
+      <a class="page-link shadow-sm" 
+         [class.bg-primary]="currentPage === (i + 1)" 
+         [class.text-white]="currentPage === (i + 1)"
+         [class.text-primary]="currentPage !== (i + 1)"
+         (click)="goToPage(i + 1)"
+         style="cursor: pointer;">
+        {{ i + 1 }}
+      </a>
+    </li>
+
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage + 1)" style="cursor: pointer;">Siguiente</a>
+    </li>
+  </ul>
+</nav>
+
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">

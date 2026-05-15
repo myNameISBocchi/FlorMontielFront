@@ -34,6 +34,11 @@ export class PersonList implements OnInit, OnDestroy {
   roles: any[] = []; 
   selectedRolesMap: { [key: string]: boolean } = {};
   selectedCouncilId: string | null = null;
+  pagedPeoples:any[] = [];
+  currentPage:number = 1;
+  pageSize:number = 10;
+  totalPages:number = 1;
+  pagesArray:number[] = [];
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -62,9 +67,28 @@ export class PersonList implements OnInit, OnDestroy {
     this.searchSubject.next(this.searchTerm.trim());
   }
 
+  updatePagination(){
+    this.totalPages = Math.ceil(this.filteredPeoples.length / this.pageSize);
+
+    this.pagesArray = Array.from({length: this.totalPages},(_, i) => i +1);
+
+    const startIndex = (this.currentPage -1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.pagedPeoples = this.filteredPeoples.slice(startIndex,endIndex);
+    this.cdr.detectChanges();
+  }
+
+  setPage(page:number){
+    if(page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
   executeSearch(data: string) {
     if (!data) {
       this.filteredPeoples = [...this.peoples];
+      this.currentPage = 1;
+      this.updatePagination();
       this.cdr.detectChanges();
       return;
     }
@@ -100,6 +124,8 @@ export class PersonList implements OnInit, OnDestroy {
       next: (data: any) => {
         this.peoples = data.results;
         this.filteredPeoples = data.results || [];
+        this.currentPage = 1;
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: (err) => {

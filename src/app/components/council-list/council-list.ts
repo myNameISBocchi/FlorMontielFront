@@ -18,6 +18,10 @@ export class CouncilList implements OnInit {
   councilSelect: any = null;
   cities: any[] = [];
   comunities: any[] = [];
+  pagedCouncils:any[] = [];
+  currentPage:number = 1;
+  perPage:number = 10;
+  totalPages:number = 1;
   public authService = inject(Auth);
 
   constructor(private council: Council, private cdr: ChangeDetectorRef) {}
@@ -31,12 +35,30 @@ export class CouncilList implements OnInit {
     this.council.findAll().subscribe({
       next: (res: any) => {
         this.councils = res.results || res.result || res;
+        this.currentPage = 1;
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudieron cargar los consejos', 'error');
       }
     });
+  }
+
+  updatePagination(){
+    this.totalPages = Math.ceil(this.councils.length / this.perPage);
+    const startIndex = (this.currentPage -1) * this.perPage;
+    const endIndex = startIndex + this.perPage;
+    this.pagedCouncils = this.councils.slice(startIndex,endIndex);
+  }
+
+  goToPage(page:number){
+    if(page >= 1 && page<= this.totalPages){
+      this.currentPage = page;
+      this.updatePagination();
+
+    }
+
   }
 
   loadData() {
