@@ -1,19 +1,18 @@
 import { ChangeDetectorRef, Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { ReportService } from '../../services/report';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { form } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-person-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './person-list.html',
   styleUrl: './person-list.css',
 })
@@ -23,6 +22,7 @@ export class PersonList implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   public authService = inject(Auth);
   private reportService = inject(ReportService);
+  private fb = inject(FormBuilder);
 
   peoples: any[] = [];
   filteredPeoples: any[] = [];
@@ -35,23 +35,21 @@ export class PersonList implements OnInit, OnDestroy {
   roles: any[] = []; 
   selectedRolesMap: { [key: string]: boolean } = {};
   selectedCouncilId: string | null = null;
-  pagedPeoples:any[] = [];
-  currentPage:number = 1;
-  pageSize:number = 10;
-  totalPages:number = 1;
-  pagesArray:number[] = [];
-  ocultarPassword:boolean = true;
+  pagedPeoples: any[] = [];
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
+  pagesArray: number[] = [];
+  ocultarPassword: boolean = true;
+  editForm!: FormGroup;
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
 
   ngOnInit(): void {
     this.loadPeoples();
-
-   
+    this.initEditForm();
     this.cargarCatalogos();
-  
-    
 
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(300),
@@ -65,23 +63,35 @@ export class PersonList implements OnInit, OnDestroy {
     this.searchSubscription?.unsubscribe();
   }
 
+  initEditForm() {
+    this.editForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+$/)]],
+      lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+$/)]],
+      identification: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, this.validarTelefonoVenezuela]],
+      date: ['', [Validators.required, this.validarMayorDeEdad]],
+      cityId: ['', [Validators.required]],
+      password: ['', [Validators.minLength(8)]]
+    });
+  }
+
   onSearch() {
     this.searchSubject.next(this.searchTerm.trim());
   }
 
-  updatePagination(){
+  updatePagination() {
     this.totalPages = Math.ceil(this.filteredPeoples.length / this.pageSize);
+    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
 
-    this.pagesArray = Array.from({length: this.totalPages},(_, i) => i +1);
-
-    const startIndex = (this.currentPage -1) * this.pageSize;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    this.pagedPeoples = this.filteredPeoples.slice(startIndex,endIndex);
+    this.pagedPeoples = this.filteredPeoples.slice(startIndex, endIndex);
     this.cdr.detectChanges();
   }
 
-  setPage(page:number){
-    if(page < 1 || page > this.totalPages) return;
+  setPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.updatePagination();
   }
@@ -115,10 +125,10 @@ export class PersonList implements OnInit, OnDestroy {
 
   cargarCatalogos() {
     this.personService.getRoles().subscribe(res => this.roles = res?.results || res || []);
-  this.personService.getComunity().subscribe(res => this.comunity = res?.result || res?.results || res || []);
-  this.personService.getCouncil().subscribe(res => this.council = res?.result || res?.results || res || []);
-  this.personService.getCommitte().subscribe(res => this.committee = res?.result || res?.results || res || []);
-  this.personService.getCity().subscribe(res => this.city = res?.results || res?.result || res || []);
+    this.personService.getComunity().subscribe(res => this.comunity = res?.result || res?.results || res || []);
+    this.personService.getCouncil().subscribe(res => this.council = res?.result || res?.results || res || []);
+    this.personService.getCommitte().subscribe(res => this.committee = res?.result || res?.results || res || []);
+    this.personService.getCity().subscribe(res => this.city = res?.results || res?.result || res || []);
   }
 
   loadPeoples() {
@@ -144,9 +154,21 @@ export class PersonList implements OnInit, OnDestroy {
     this.personSelect = { ...person };
     this.selectedRolesMap = {};
 
+    let fechaFormateada = '';
     if (this.personSelect.date) {
-      this.personSelect.date = this.personSelect.date.split(' ')[0];
+      fechaFormateada = this.personSelect.date.split(' ')[0];
     }
+
+    this.editForm.patchValue({
+      firstName: this.personSelect.firstName,
+      lastName: this.personSelect.lastName,
+      identification: this.personSelect.identification,
+      email: this.personSelect.email,
+      phone: this.personSelect.phone,
+      date: fechaFormateada,
+      cityId: this.personSelect.cityId,
+      password: '' 
+    });
 
     if (person.roleId) {
       const currentRoles = Array.isArray(person.roleId) ? person.roleId : [person.roleId];
@@ -244,43 +266,55 @@ export class PersonList implements OnInit, OnDestroy {
 
   updatePerson() {
     if (!this.personSelect || !this.personSelect.personId) return;
-    const id = this.personSelect.personId;
-    const dataToUpdate: any = {
-      firstName: this.personSelect.firstName,
-      lastName: this.personSelect.lastName,
-      identification: this.personSelect.identification,
-      phone: this.personSelect.phone,
-      date: this.personSelect.date,
-      cityId: this.personSelect.cityId,
-      email: this.personSelect.email,
-      status: this.personSelect.status
-    };
 
-    if (this.personSelect.password && this.personSelect.password.trim() !== '') {
-      dataToUpdate.password = this.personSelect.password;
-    }
+    if (this.editForm.valid) {
+      const id = this.personSelect.personId;
+      const formValues = this.editForm.value;
 
-    this.personService.updatePerson(id, dataToUpdate).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Actualizado!',
-          text: 'Registro actualizado con éxito',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.loadPeoples();
-        this.personSelect = null;
-        const modalElement = document.getElementById('editPersonModal');
-        if (modalElement) {
-          const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
-          if (bootstrapModal) bootstrapModal.hide();
-        }
-      },
-      error: (err) => {
-        Swal.fire('Error', 'No se pudo actualizar el registro', 'error');
+      const dataToUpdate: any = {
+        firstName: formValues.firstName,
+        lastName: formValues.lastName,
+        identification: formValues.identification,
+        phone: formValues.phone,
+        date: formValues.date,
+        cityId: formValues.cityId,
+        email: formValues.email,
+        status: this.personSelect.status
+      };
+
+      if (formValues.password && formValues.password.trim() !== '') {
+        dataToUpdate.password = formValues.password;
       }
-    });
+
+      this.personService.updatePerson(id, dataToUpdate).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Actualizado!',
+            text: 'Registro actualizado con éxito',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          this.loadPeoples();
+          this.personSelect = null;
+          const modalElement = document.getElementById('editPersonModal');
+          if (modalElement) {
+            const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+            if (bootstrapModal) bootstrapModal.hide();
+          }
+        },
+        error: (err) => {
+          Swal.fire('Error', 'No se pudo actualizar el registro', 'error');
+        }
+      });
+    } else {
+      this.editForm.markAllAsTouched();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos o incorrectos',
+        text: 'Por favor, revisa las validaciones antes de guardar'
+      });
+    }
   }
 
   handleImageError(event: any) {
@@ -312,8 +346,72 @@ export class PersonList implements OnInit, OnDestroy {
             console.error('Error al descargar el reporte:', err);
         }
     });
-}
+  }
 
+  togglePassword(): void {
+    this.ocultarPassword = !this.ocultarPassword;
+  }
 
+  validarTelefonoVenezuela(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    if (!valor || valor === '+58 ') return { required: true };
+    const regexTel = /^\+58 (412|414|416|424|426)-\d{3}-\d{4}$/;
+    return regexTel.test(valor) ? null : { telefonoInvalido: true };
+  }
 
+  validarMayorDeEdad(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    if (!valor) return null;
+
+    const fechaNacimiento = new Date(valor);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+      edad--;
+    }
+    return edad >= 18 ? null : { menorDeEdad: true };
+  }
+
+  formatearCedula(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+
+    let valorFormateado = valor;
+    if (valor.length > 0) {
+      valorFormateado = new Intl.NumberFormat('es-VE').format(parseInt(valor, 10));
+    }
+
+    input.value = valorFormateado;
+    this.editForm.get('identification')?.setValue(valorFormateado, { emitEvent: false });
+    this.editForm.get('identification')?.markAsTouched();
+    this.editForm.get('identification')?.updateValueAndValidity();
+  }
+
+  formatearTelefono(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value;
+
+    if (!valor.startsWith('+58 ')) {
+      valor = '+58 ' + valor.replace(/^\+58\s*/, '');
+    }
+    let digitos = valor.substring(4).replace(/\D/g, '');
+    if (digitos.startsWith('0')) {
+      digitos = digitos.substring(1);
+    }
+
+    if (digitos.length > 10) digitos = digitos.slice(0, 10);
+
+    let formateado = '+58 ';
+    if (digitos.length > 0) formateado += digitos.substring(0, 3);
+    if (digitos.length > 3) formateado += '-' + digitos.substring(3, 6);
+    if (digitos.length > 6) formateado += '-' + digitos.substring(6, 10);
+
+    input.value = formateado;
+    this.editForm.get('phone')?.setValue(formateado, { emitEvent: false });
+    this.editForm.get('phone')?.markAsTouched();
+    this.editForm.get('phone')?.updateValueAndValidity();
+  }
 }

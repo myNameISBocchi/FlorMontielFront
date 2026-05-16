@@ -98,42 +98,76 @@
                 <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2"></i>ACTUALIZAR DATOS DEL VOCERO</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form *ngIf="personSelect" (submit)="updatePerson()">
+            <form *ngIf="personSelect" [formGroup]="editForm" (ngSubmit)="updatePerson()">
                 <div class="modal-body p-4 bg-light">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">NOMBRES</label>
-                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.firstName" name="editFirstName" required>
+                            <input type="text" class="form-control border-0 shadow-sm" formControlName="firstName">
+                            <div *ngIf="editForm.get('firstName')?.touched && editForm.get('firstName')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</span>
+                                <span *ngIf="editForm.get('firstName')?.errors?.['pattern']">Solo se admiten letras.</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">APELLIDOS</label>
-                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.lastName" name="editLastName" required>
+                            <input type="text" class="form-control border-0 shadow-sm" formControlName="lastName">
+                            <div *ngIf="editForm.get('lastName')?.touched && editForm.get('lastName')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('lastName')?.errors?.['required']">El apellido es obligatorio.</span>
+                                <span *ngIf="editForm.get('lastName')?.errors?.['pattern']">Solo se admiten letras.</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">CÉDULA</label>
-                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.identification" name="editIden" required>
+                            <input type="text" class="form-control border-0 shadow-sm" formControlName="identification" (input)="formatearCedula($event)">
+                            <div *ngIf="editForm.get('identification')?.touched && editForm.get('identification')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('identification')?.errors?.['required']">La cédula es obligatoria.</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">TELÉFONO</label>
-                            <input type="text" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.phone" name="editPhone" required>
+                            <input type="text" class="form-control border-0 shadow-sm" formControlName="phone" (input)="formatearTelefono($event)">
+                            <div *ngIf="editForm.get('phone')?.touched && editForm.get('phone')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('phone')?.errors?.['required']">El teléfono es obligatorio.</span>
+                                <span *ngIf="editForm.get('phone')?.errors?.['telefonoInvalido']">Formato inválido (Ej: +58 414-123-4567).</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">FECHA DE NACIMIENTO</label>
-                            <input type="date" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.date" name="editDate" required>
+                            <input type="date" class="form-control border-0 shadow-sm" formControlName="date">
+                            <div *ngIf="editForm.get('date')?.touched && editForm.get('date')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('date')?.errors?.['required']">La fecha de nacimiento es obligatoria.</span>
+                                <span *ng Oliv="editForm.get('date')?.errors?.['menorDeEdad']">Debe ser mayor de edad (18+).</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">CORREO ELECTRÓNICO</label>
-                            <input type="email" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.email" name="editEmail" required>
+                            <input type="email" class="form-control border-0 shadow-sm" formControlName="email">
+                            <div *ngIf="editForm.get('email')?.touched && editForm.get('email')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('email')?.errors?.['required']">El correo electrónico es obligatorio.</span>
+                                <span *ngIf="editForm.get('email')?.errors?.['email']">Ingrese una dirección de correo válida.</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">CIUDAD / ESTADO</label>
-                            <select class="form-select border-0 shadow-sm" [(ngModel)]="personSelect.cityId" name="editCity" required>
+                            <select class="form-select border-0 shadow-sm" formControlName="cityId">
                                 <option *ngFor="let c of city" [value]="c.cityId">{{ c.cityName || c.state }}</option>
                             </select>
+                            <div *ngIf="editForm.get('cityId')?.touched && editForm.get('cityId')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('cityId')?.errors?.['required']">La ciudad o estado es obligatorio.</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">NUEVA CONTRASEÑA (OPCIONAL)</label>
-                            <input type="password" class="form-control border-0 shadow-sm" [(ngModel)]="personSelect.password" name="editPass" placeholder="Vacío para no cambiar">
+                            <div class="input-group">
+                                <input [type]="ocultarPassword ? 'password' : 'text'" class="form-control border-0 shadow-sm" formControlName="password" placeholder="Vacío para no cambiar" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                <button class="btn btn-white bg-white border-0 shadow-sm" type="button" (click)="togglePassword()" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                    <i class="fa-solid" [ngClass]="ocultarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="editForm.get('password')?.touched && editForm.get('password')?.invalid" class="text-danger small mt-1">
+                                <span *ngIf="editForm.get('password')?.errors?.['minlength']">La contraseña debe tener mínimo 8 caracteres.</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -183,6 +217,7 @@
     </ul>
   </nav>
 </div>
+
 <div class="modal fade" id="assignRolesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
