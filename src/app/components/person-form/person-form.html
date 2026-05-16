@@ -27,17 +27,22 @@
 
           <div class="col-md-6">
             <label class="form-label fw-semibold text-muted">Contraseña:</label>
-            <input type="password" class="form-control form-control-lg shadow-sm" formControlName="password" placeholder="********">
+            <div class="input-group">
+              <input [type]="ocultarPassword ? 'password' : 'text'" class="form-control form-control-lg shadow-sm border-end-0" formControlName="password" placeholder="********">
+              <button class="btn btn-lg bg-white border shadow-sm border-start-0 text-muted" type="button" (click)="togglePassword()">
+                <i class="bi" [ngClass]="ocultarPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+              </button>
+            </div>
           </div>
 
           <div class="col-md-6">
             <label class="form-label fw-semibold text-muted">Cédula:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="identification" placeholder="V-31478490">
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="identification" placeholder="V-31478490" (input)="formatearCedula($event)">
           </div>
 
           <div class="col-md-6">
             <label class="form-label fw-semibold text-muted">Teléfono:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="phone" placeholder="0414-0000000">
+            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="phone" placeholder="0414-0000000" (input)="formatearTelefono($event)">
           </div>
 
           <div class="col-md-6">

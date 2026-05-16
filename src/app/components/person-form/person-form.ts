@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Person } from '../../services/person';
@@ -23,24 +23,25 @@ export class PersonForm implements OnInit {
   committee: any[] = [];
   city: any[] = [];
   subcommittees: any[] = [];
-  showSubcommittee: boolean = false;
+  showSubcommittee: boolean = false; 
+  ocultarPassword: boolean = true;
 
   ngOnInit(): void {
     this.cargarDatos();
     this.personForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+$/)]],
+      lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+$/)]],
       identification: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      date: ['', [Validators.required]],
+      phone: ['+58 ', [Validators.required, this.validarTelefonoVenezuela]],
+      date: ['', [Validators.required, this.validarMayorDeEdad]],
       cityId: ['', [Validators.required]],
       comunityId: [''],
       councilId: [''],
       committeeId: [''],
       subcommitteeId: [''],
       roleId: ['[]'],
-      password: ['']
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
 
     this.personForm.get('comunityId')?.valueChanges.subscribe(id => {
@@ -61,6 +62,10 @@ export class PersonForm implements OnInit {
         this.personForm.patchValue({ subcommitteeId: '' });
       }
     });
+  }
+
+  togglePassword(): void {
+    this.ocultarPassword = !this.ocultarPassword;
   }
 
   onCommitteeChange(id: string) {
@@ -129,11 +134,75 @@ export class PersonForm implements OnInit {
         }
       });
     } else {
+      this.personForm.markAllAsTouched();
       Swal.fire({
         icon: 'warning',
         title: 'Campos incompletos',
         text: 'Por favor, completa todos los campos obligatorios'
       });
     }
+  }
+
+  validarTelefonoVenezuela(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    if (!valor || valor === '+58 ') return { required: true };
+    const regexTel = /^\+58 (412|414|416|424|426)-\d{3}-\d{4}$/;
+    return regexTel.test(valor) ? null : { telefonoInvalido: true };
+  }
+
+  validarMayorDeEdad(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    if (!valor) return null;
+
+    const fechaNacimiento = new Date(valor);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+      edad--;
+    }
+    return edad >= 18 ? null : { menorDeEdad: true };
+  }
+
+  formatearCedula(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.slice(0, 8);
+
+    let valorFormateado = valor;
+    if (valor.length > 0) {
+      valorFormateado = new Intl.NumberFormat('es-VE').format(parseInt(valor, 10));
+    }
+
+    input.value = valorFormateado;
+    this.personForm.get('identification')?.setValue(valorFormateado, { emitEvent: false });
+    this.personForm.get('identification')?.markAsTouched();
+    this.personForm.get('identification')?.updateValueAndValidity();
+  }
+
+  formatearTelefono(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value;
+
+    if (!valor.startsWith('+58 ')) {
+      valor = '+58 ' + valor.replace(/^\+58\s*/, '');
+    }
+    let digitos = valor.substring(4).replace(/\D/g, '');
+    if (digitos.startsWith('0')) {
+      digitos = digitos.substring(1);
+    }
+
+    if (digitos.length > 10) digitos = digitos.slice(0, 10);
+
+    let formateado = '+58 ';
+    if (digitos.length > 0) formateado += digitos.substring(0, 3);
+    if (digitos.length > 3) formateado += '-' + digitos.substring(3, 6);
+    if (digitos.length > 6) formateado += '-' + digitos.substring(6, 10);
+
+    input.value = formateado;
+    this.personForm.get('phone')?.setValue(formateado, { emitEvent: false });
+    this.personForm.get('phone')?.markAsTouched();
+    this.personForm.get('phone')?.updateValueAndValidity();
   }
 }

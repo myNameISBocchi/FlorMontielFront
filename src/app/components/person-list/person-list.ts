@@ -8,6 +8,7 @@ import { ReportService } from '../../services/report';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { form } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-person-list',
@@ -39,6 +40,7 @@ export class PersonList implements OnInit, OnDestroy {
   pageSize:number = 10;
   totalPages:number = 1;
   pagesArray:number[] = [];
+  ocultarPassword:boolean = true;
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -311,4 +313,7 @@ export class PersonList implements OnInit, OnDestroy {
         }
     });
 }
+
+
+
 }
