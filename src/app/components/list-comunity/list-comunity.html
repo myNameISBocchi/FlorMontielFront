@@ -1,48 +1,45 @@
 <div class="container py-5">
   <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
     <div class="d-flex align-items-center">
-        <h4 class="mb-0">Gestionar Comunas</h4>
+      <h4 class="mb-0">Gestionar Comunidades</h4>
     </div>
     <div style="width: 250px;">
-        <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
-                <i class="fas fa-search text-muted"></i>
-            </span>
-            <input type="text" 
-                   class="form-control border-start-0 ps-0 rounded-end-pill" 
-                   placeholder="Buscar..." 
-                   style="box-shadow: none;"
-                   >
-        </div>
-    </div>
-</div>
-@if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() ==='LIDER DE COMUNA'){
-  <div class="card border-0 shadow-sm mb-5">
-    <div class="card-body p-4">
-      <h5 class="fw-bold mb-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
-      <form (submit)="createComunity($event)" class="row g-3 align-items-center">
-        <div class="col-md-5">
-          <div class="form-floating">
-            <input type="text" class="form-control border-0 bg-light" id="comName" name="comunityName" placeholder="Nombre" required>
-            <label for="comName">Nombre de la Comunidad</label>
-          </div>
-        </div>
-        <div class="col-md-5">
-          <div class="form-floating">
-            <input type="text" class="form-control border-0 bg-light" id="comMaps" name="googleMaps" placeholder="Ubicación" required>
-            <label for="comMaps">Coordenadas / Ubicación</label>
-          </div>
-        </div>
-        <div class="col-md-2 d-grid">
-          <button type="submit" class="btn btn-danger py-3 shadow-sm fw-bold">
-            <i class="fa-solid fa-plus me-1"></i>Añadir
-          </button>
-        </div>
-      </form>
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+          <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 ps-0 rounded-end-pill" placeholder="Buscar..." style="box-shadow: none;">
+      </div>
     </div>
   </div>
 
-}
+  @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+    <div class="card border-0 shadow-sm mb-5">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
+        <form (submit)="createComunity($event)" class="row g-3 align-items-center">
+          <div class="col-md-5">
+            <div class="form-floating">
+              <input type="text" class="form-control border-0 bg-light" id="comName" name="comunityName" placeholder="Nombre" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$">
+              <label for="comName">Nombre de la Comunidad</label>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="form-floating">
+              <input type="text" class="form-control border-0 bg-light" id="comMaps" name="googleMaps" placeholder="Ubicación" pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:]+$">
+              <label for="comMaps">Coordenadas / Ubicación</label>
+            </div>
+          </div>
+          <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-danger py-2 shadow-sm fw-bold">
+              <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
   <div class="row g-4">
     @for(item of pagedComunity; track item.comunityId) {
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex mb-4">
@@ -53,27 +50,32 @@
           <div class="card-info">
             <h5 class="title">{{item.comunityName}}</h5>
             <p class="location">
-              <i class="fa-solid fa-location-dot"></i> {{item.googleMaps}}
+              <i class="fa-solid fa-location-dot"></i> 
+              @if(item.googleMaps && item.googleMaps.trim() !== '') {
+                <a [href]="item.googleMaps.startsWith('http') ? item.googleMaps : 'https://www.google.com/maps/search/?api=1&query=' + item.googleMaps" target="_blank" class="btn btn-link p-0 text-decoration-none fw-bold text-danger btn-sm align-baseline ms-1">
+                  Ver mapa
+                </a>
+              } @else {
+                <span class="text-muted ms-1 fw-bold">N/A</span>
+              }
             </p>
           </div>
           <div class="card-actions">
             @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
               <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
             }
             @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
               <label [for]="'file-' + item.comunityId" class="action-btn view">
-             <i class="fa-solid fa-camera"></i>
-            </label>
-
+                <i class="fa-solid fa-camera"></i>
+              </label>
             }
-            
             <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
             @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() ==='LIDER DE COMUNA'){
               <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
             }
           </div>
         </div>
@@ -82,53 +84,43 @@
   </div>
 
   <nav class="mt-4" *ngIf="totalPages > 1">
-  <ul class="pagination justify-content-center">
-    <li class="page-item" [class.disabled]="currentPage === 1">
-      <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage - 1)" style="cursor: pointer;">Anterior</a>
-    </li>
-
-    <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index">
-      <a class="page-link shadow-sm" 
-         [class.bg-primary]="currentPage === (i + 1)" 
-         [class.text-white]="currentPage === (i + 1)"
-         [class.text-primary]="currentPage !== (i + 1)"
-         (click)="goToPage(i + 1)"
-         style="cursor: pointer;">
-        {{ i + 1 }}
-      </a>
-    </li>
-
-    <li class="page-item" [class.disabled]="currentPage === totalPages">
-      <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage + 1)" style="cursor: pointer;">Siguiente</a>
-    </li>
-  </ul>
-</nav>
-
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage - 1)" style="cursor: pointer;">Anterior</a>
+      </li>
+      <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index">
+        <a class="page-link shadow-sm" [class.bg-primary]="currentPage === (i + 1)" [class.text-white]="currentPage === (i + 1)" [class.text-primary]="currentPage !== (i + 1)" (click)="goToPage(i + 1)" style="cursor: pointer;">
+          {{ i + 1 }}
+        </a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link shadow-sm text-primary" (click)="goToPage(currentPage + 1)" style="cursor: pointer;">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header bg-secondary text-white">
+      <div class="modal-header bg-danger text-white">
         <h5 class="modal-title fw-bold" id="editModalLabel">Actualizar Comunidad</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
-        </button>
-        
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form *ngIf="comunitySelect" (submit)="updateComunity($event)">
         <div class="modal-body p-4">
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted">Nombre de la Comunidad</label>
-            <input type="text" class="form-control bg-light border-0" [(ngModel)]="comunitySelect.comunityName" name="editName" required>
+            <input type="text" class="form-control bg-light border-0" [(ngModel)]="comunitySelect.comunityName" name="editName" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$">
           </div>
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted">Ubicación / Google Maps</label>
-            <input type="text" class="form-control bg-light border-0" [(ngModel)]="comunitySelect.googleMaps" name="editMaps" required>
+            <input type="text" class="form-control bg-light border-0" [(ngModel)]="comunitySelect.googleMaps" name="editMaps" pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:]+$">
           </div>
         </div>
         <div class="modal-footer border-0">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-danger px-4 shadow-sm" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger px-4 shadow-sm">
             Actualizar Registro
           </button>
         </div>

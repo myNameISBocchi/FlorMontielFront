@@ -20,10 +20,10 @@ export class ListComunity implements OnInit {
 
   comunity: any[] = [];
   comunitySelect: any = null;
-  pagedComunity:any[] = [];
-  currentPage:number = 1;
-  perPage:number = 8;
-  totalPages:number = 1;
+  pagedComunity: any[] = [];
+  currentPage: number = 1;
+  perPage: number = 8;
+  totalPages: number = 1;
 
   ngOnInit(): void {
     this.getComunity();
@@ -42,16 +42,16 @@ export class ListComunity implements OnInit {
     });
   }
 
-  updatePagination(){
+  updatePagination() {
     this.totalPages = Math.ceil(this.comunity.length / this.perPage);
     const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
 
-    this.pagedComunity = this.comunity.slice(startIndex,endIndex);
+    this.pagedComunity = this.comunity.slice(startIndex, endIndex);
   }
 
-  goToPage(page:number){
-    if(page >= 1 && page <= this.totalPages){
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePagination();
     }
@@ -80,7 +80,7 @@ export class ListComunity implements OnInit {
             });
             this.getComunity();
           },
-          error: (err) => {
+          error: () => {
             Swal.fire("Error", "No se pudo borrar el registro", "error");
           }
         });
@@ -95,7 +95,7 @@ export class ListComunity implements OnInit {
       formData.append('photoComunity', file);
 
       this.comunityService.updatePhoto(id, formData).subscribe({
-        next: (res) => {
+        next: () => {
           Swal.fire({
             icon: 'success',
             title: 'Imagen actualizada',
@@ -104,7 +104,7 @@ export class ListComunity implements OnInit {
           });
           this.getComunity();
         },
-        error: (err) => Swal.fire('Error', 'No se pudo subir la imagen', 'error')
+        error: () => Swal.fire('Error', 'No se pudo subir la imagen', 'error')
       });
     }
   }
@@ -113,10 +113,31 @@ export class ListComunity implements OnInit {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
 
-    const DataComunity: any = {
-      comunityName: form['comunityName'].value,
-      googleMaps: form['googleMaps'].value
+    const nameValue = form['comunityName'].value.trim();
+    const mapsValue = form['googleMaps'].value.trim();
+
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$/;
+    const validMapsRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:]+$/;
+
+    if (!nameValue) {
+      Swal.fire('Error', 'El nombre de la comunidad es obligatorio.', 'error');
+      return;
     }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales no permitidos.', 'error');
+      return;
+    }
+
+    if (mapsValue && !validMapsRegex.test(mapsValue)) {
+      Swal.fire('Error', 'La ubicación contiene un formato o caracteres inválidos.', 'error');
+      return;
+    }
+
+    const DataComunity: any = {
+      comunityName: nameValue,
+      googleMaps: mapsValue
+    };
 
     this.comunityService.createComunity(DataComunity).subscribe({
       next: () => {
@@ -131,7 +152,7 @@ export class ListComunity implements OnInit {
         this.getComunity();
         this.comunitySelect = null;
       },
-      error: (err) => {
+      error: () => {
         Swal.fire('Error', 'Fallo al crear la comunidad', 'error');
       }
     });
@@ -139,15 +160,39 @@ export class ListComunity implements OnInit {
 
   openModalButton(item: any) {
     this.comunitySelect = { ...item };
+    if (!this.comunitySelect.googleMaps) {
+      this.comunitySelect.googleMaps = '';
+    }
   }
 
   updateComunity(event: Event) {
     event.preventDefault();
 
     const id = this.comunitySelect.comunityId;
+    const nameValue = this.comunitySelect.comunityName.trim();
+    const mapsValue = this.comunitySelect.googleMaps ? this.comunitySelect.googleMaps.trim() : '';
+
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$/;
+    const validMapsRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:?=&%_+!*(),;@]+$/;
+
+    if (!nameValue) {
+      Swal.fire('Error', 'El nombre de la comunidad es obligatorio.', 'error');
+      return;
+    }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales o formato inválido.', 'error');
+      return;
+    }
+
+    if (mapsValue && !validMapsRegex.test(mapsValue)) {
+      Swal.fire('Error', 'La ubicación contiene caracteres especiales no permitidos.', 'error');
+      return;
+    }
+
     const data = {
-      comunityName: this.comunitySelect.comunityName,
-      googleMaps: this.comunitySelect.googleMaps
+      comunityName: nameValue,
+      googleMaps: mapsValue
     };
 
     this.comunityService.updateComunity(id, data).subscribe({
@@ -159,9 +204,19 @@ export class ListComunity implements OnInit {
           timer: 2000,
           showConfirmButton: false
         });
+
+        const modalElement = document.getElementById('editModal');
+        if (modalElement) {
+          const bootstrap = (window as any).bootstrap;
+          if (bootstrap) {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modalInstance.hide();
+          }
+        }
+
         this.getComunity();
       },
-      error: (error) => {
+      error: () => {
         Swal.fire('Error', 'Fallo al actualizar', 'error');
       }
     });

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Council } from '../../services/council';
 import { ChangeDetectorRef } from '@angular/core';
@@ -18,10 +18,10 @@ export class CouncilList implements OnInit {
   councilSelect: any = null;
   cities: any[] = [];
   comunities: any[] = [];
-  pagedCouncils:any[] = [];
-  currentPage:number = 1;
-  perPage:number = 10;
-  totalPages:number = 1;
+  pagedCouncils: any[] = [];
+  currentPage: number = 1;
+  perPage: number = 10;
+  totalPages: number = 1;
   public authService = inject(Auth);
 
   constructor(private council: Council, private cdr: ChangeDetectorRef) {}
@@ -45,20 +45,18 @@ export class CouncilList implements OnInit {
     });
   }
 
-  updatePagination(){
+  updatePagination() {
     this.totalPages = Math.ceil(this.councils.length / this.perPage);
-    const startIndex = (this.currentPage -1) * this.perPage;
+    const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
-    this.pagedCouncils = this.councils.slice(startIndex,endIndex);
+    this.pagedCouncils = this.councils.slice(startIndex, endIndex);
   }
 
-  goToPage(page:number){
-    if(page >= 1 && page<= this.totalPages){
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePagination();
-
     }
-
   }
 
   loadData() {
@@ -69,11 +67,29 @@ export class CouncilList implements OnInit {
   createCouncil(event: any) {
     event.preventDefault();
     const formData = new FormData(event.target);
+    
+    const nameValue = (formData.get('councilName') as string || '').trim();
+    const cityValue = formData.get('cityId');
+    const comunityValue = formData.get('comunityId');
+    const mapsValue = (formData.get('googleMaps') as string || '').trim();
+
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$/;
+
+    if (!nameValue || !cityValue || !comunityValue) {
+      Swal.fire('Error', 'Los campos obligatorios no pueden estar vacíos ni contener solo espacios.', 'error');
+      return;
+    }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales no permitidos o espacios inválidos.', 'error');
+      return;
+    }
+
     const data = {
-      councilName: formData.get('councilName'),
-      comunityId: formData.get('comunityId'),
-      cityId: formData.get('cityId'),
-      googleMaps: formData.get('googleMaps')
+      councilName: nameValue,
+      comunityId: comunityValue,
+      cityId: cityValue,
+      googleMaps: mapsValue
     };
 
     this.council.create(data).subscribe({
@@ -102,11 +118,28 @@ export class CouncilList implements OnInit {
       return;
     }
 
+    const nameValue = (this.councilSelect.councilName || '').trim();
+    const cityValue = this.councilSelect.cityId;
+    const comunityValue = this.councilSelect.comunityId;
+    const mapsValue = (this.councilSelect.googleMaps || '').trim();
+
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$/;
+
+    if (!nameValue || !cityValue || !comunityValue) {
+      Swal.fire('Error', 'Los campos obligatorios no pueden estar vacíos ni contener solo espacios.', 'error');
+      return;
+    }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales o formato inválido.', 'error');
+      return;
+    }
+
     const dataToSend = {
-      councilName: this.councilSelect.councilName,
-      cityId: this.councilSelect.cityId,
-      comunityId: this.councilSelect.comunityId,
-      googleMaps: this.councilSelect.googleMaps
+      councilName: nameValue,
+      cityId: cityValue,
+      comunityId: comunityValue,
+      googleMaps: mapsValue
     };
 
     this.council.update(this.councilSelect.councilId, dataToSend).subscribe({
@@ -121,6 +154,16 @@ export class CouncilList implements OnInit {
             timer: 2000,
             showConfirmButton: false
           });
+
+          const modalElement = document.getElementById('editModal');
+          if (modalElement) {
+            const bootstrap = (window as any).bootstrap;
+            if (bootstrap) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+              modalInstance.hide();
+            }
+          }
+
           this.getCouncils();
           this.councilSelect = null;
         }

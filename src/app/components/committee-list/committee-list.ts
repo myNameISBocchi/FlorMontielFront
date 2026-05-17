@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-committee-list',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './committee-list.html',
   styleUrl: './committee-list.css',
@@ -18,16 +19,15 @@ export class CommitteeList implements OnInit {
   public authService = inject(Auth);
 
   committees: any[] = [];
-  pagedCommittees:any[] = [];
-  currentPage:number = 1;
-  perPage:number = 6;
-  totalPages:number = 1;
-
+  pagedCommittees: any[] = [];
+  currentPage: number = 1;
+  perPage: number = 6;
+  totalPages: number = 1;
 
   committeeForm = {
     committeeId: '',
     committeeName: '',
-    parentId: null
+    parentId: null as string | null
   };
 
   ngOnInit(): void {
@@ -42,29 +42,51 @@ export class CommitteeList implements OnInit {
         this.currentPage = 1;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         Swal.fire('Error', 'Error al cargar comités', 'error');
       }
     });
   }
 
-  updatePagination(){
+  updatePagination() {
     this.totalPages = Math.ceil(this.committees.length / this.perPage);
-    const startIndex = (this.currentPage -1) * this.perPage;
+    const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
-    this.pagedCommittees = this.committees.slice(startIndex,endIndex);
+    this.pagedCommittees = this.committees.slice(startIndex, endIndex);
   }
 
-  goTopage(page:number){
-    if(page >= 1 && page <= this.totalPages){
+  goTopage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePagination();
     }
-
   }
 
-  createCommittee() {
-    this.committeeService.createCommittee(this.committeeForm).subscribe({
+  createCommittee(event: any) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    
+    const nameValue = (formData.get('committeeName') as string || '').trim();
+    const parentValue = formData.get('parentId') ? String(formData.get('parentId')) : null;
+
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\(\)]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\(\)]+)*$/;
+
+    if (!nameValue) {
+      Swal.fire('Error', 'El nombre del comité es obligatorio y no puede estar vacío.', 'error');
+      return;
+    }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales no permitidos.', 'error');
+      return;
+    }
+
+    const data = {
+      committeeName: nameValue,
+      parentId: parentValue === 'null' ? null : parentValue
+    };
+
+    this.committeeService.createCommittee(data).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
@@ -74,6 +96,7 @@ export class CommitteeList implements OnInit {
           showConfirmButton: false
         });
         this.list();
+        event.target.reset();
         this.resetForm();
       },
       error: () => Swal.fire('Error', 'No se pudo registrar el comité', 'error')
@@ -89,9 +112,25 @@ export class CommitteeList implements OnInit {
   }
 
   updateCommittee() {
-    const { committeeId, ...data } = this.committeeForm;
+    const nameValue = (this.committeeForm.committeeName || '').trim();
+    const validNameRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\(\)]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\(\)]+)*$/;
 
-    this.committeeService.updateCommittee(committeeId, data).subscribe({
+    if (!nameValue) {
+      Swal.fire('Error', 'El nombre no puede quedar vacío.', 'error');
+      return;
+    }
+
+    if (!validNameRegex.test(nameValue)) {
+      Swal.fire('Error', 'El nombre contiene caracteres especiales no permitidos.', 'error');
+      return;
+    }
+
+    const dataToSend = {
+      committeeName: nameValue,
+      parentId: this.committeeForm.parentId
+    };
+
+    this.committeeService.updateCommittee(this.committeeForm.committeeId, dataToSend).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
@@ -100,11 +139,21 @@ export class CommitteeList implements OnInit {
           timer: 2000,
           showConfirmButton: false
         });
+
+        const modalElement = document.getElementById('modalUpdate');
+        if (modalElement) {
+          const bootstrap = (window as any).bootstrap;
+          if (bootstrap) {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modalInstance.hide();
+          }
+        }
+
         this.list();
         this.resetForm();
         this.cdr.detectChanges();
       },
-      error: (err) => Swal.fire('Error', 'Error al actualizar', 'error')
+      error: () => Swal.fire('Error', 'Error al actualizar', 'error')
     });
   }
 
