@@ -4,8 +4,33 @@
     </div>
 </div>
 
+<!-- OVERLAY para móvil -->
+<div *ngIf="isMobile && sidebarOpen" 
+     class="sidebar-overlay"
+     (click)="closeSidebar()">
+</div>
+
 <div class="d-flex" style="min-height: 100vh; background-color: #f0f2f5;" *ngIf="!isLoading && userData && router.url !== '/login'">
-    <aside class="bg-white shadow-sm" style="width: 250px; min-width: 250px; flex-shrink: 0; display: flex; flex-direction: column;">
+    
+    <!-- BOTÓN HAMBURGUESA - Solo visible en móvil -->
+    <button *ngIf="isMobile" 
+            class="hamburger-btn"
+            (click)="toggleSidebar(); $event.stopPropagation()">
+        <i [class]="sidebarOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside [class]="isMobile ? 'sidebar-mobile' : 'sidebar-desktop'"
+           [class.sidebar-open]="sidebarOpen"
+           [class.sidebar-closed]="!sidebarOpen">
+        
+        <!-- Botón cerrar en móvil -->
+        <button *ngIf="isMobile" 
+                class="sidebar-close-btn"
+                (click)="closeSidebar()">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        
         <div class="p-4 text-center">
             <img src="img/logo.png" alt="Logo" class="img-fluid" style="max-height: 100px;">
         </div>
@@ -13,14 +38,14 @@
         <nav class="flex-grow-1 mt-2">
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item">
-                    <a routerLink="/home" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                    <a routerLink="/home" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                         <i class="fa-solid fa-house me-3"></i>Inicio
                     </a>
                 </li>
                 
                 @if(authService.hasPrivilege('comunities.index')){
                     <li class="nav-item">
-                        <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-people-group me-2"></i>Gestionar Comunidad
                         </a>
                     </li>
@@ -28,7 +53,7 @@
                 
                 @if(authService.hasPrivilege('peoples.index')){
                     <li class="nav-item">
-                        <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-user-group me-3"></i>Gestionar Voceros
                         </a>
                     </li>
@@ -36,7 +61,7 @@
 
                 @if(authService.hasPrivilege('councils.index')){
                     <li class="nav-item">
-                        <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-handshake-angle me-2"></i>Gestionar Consejos
                         </a>
                     </li>
@@ -44,7 +69,7 @@
                 
                 @if(authService.hasPrivilege('committees.index')){
                     <li class="nav-item">
-                        <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-users me-3"></i>Gestionar Comites
                         </a>
                     </li>
@@ -60,7 +85,7 @@
                 
                 @if(authService.hasPrivilege('roles.index')){
                     <li class="nav-item">
-                        <a routerLink="/admin/roles" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/admin/roles" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-tags me-3"></i>Gestionar Roles
                         </a>
                     </li>
@@ -68,7 +93,7 @@
                 
                 @if(authService.hasPrivilege('privileges.index')){
                     <li class="nav-item">
-                        <a routerLink="/admin/privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/admin/privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-key me-3"></i>Gestionar Privilegios
                         </a>
                     </li>
@@ -76,7 +101,7 @@
                 
                 @if(authService.hasPrivilege('role_privileges.index')){
                     <li class="nav-item">
-                        <a routerLink="/admin/role-privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/admin/role-privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-link me-3"></i>Asignar Privilegios
                         </a>
                     </li>
@@ -84,7 +109,7 @@
                 
                 @if(authService.hasPrivilege('countries.index')){
                     <li class="nav-item">
-                        <a routerLink="/countries" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/countries" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-globe me-3"></i>Gestionar Países
                         </a>
                     </li>
@@ -92,7 +117,7 @@
                 
                 @if(authService.hasPrivilege('states.index')){
                     <li class="nav-item">
-                        <a routerLink="/states" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/states" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-map me-3"></i>Gestionar Estados
                         </a>
                     </li>
@@ -100,7 +125,7 @@
                 
                 @if(authService.hasPrivilege('cities.index')){
                     <li class="nav-item">
-                        <a routerLink="/cities" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                        <a routerLink="/cities" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
                             <i class="fa-solid fa-city me-3"></i>Gestionar Ciudades
                         </a>
                     </li>
@@ -116,7 +141,7 @@
     </aside>
 
     <div class="flex-grow-1 d-flex flex-column">
-        <header class="bg-white m-3 p-3 shadow-sm rounded d-flex justify-content-between align-items-center">
+        <header class="bg-white m-3 p-3 shadow-sm rounded d-flex justify-content-between align-items-center" [style.margin-left]="isMobile ? '60px' : '0'">
             <h5 class="mb-0 fw-bold text-danger">COMUNA SOCIALISTA FLOR MONTIEL</h5>
             
             <div class="position-relative">

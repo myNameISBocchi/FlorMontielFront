@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, ChangeDetectorRef, HostListener, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, HostListener, ElementRef, Renderer2, PLATFORM_ID } from '@angular/core';
 import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router'; 
-import { CommonModule } from '@angular/common'; 
+import { CommonModule, isPlatformBrowser } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { Auth } from './services/auth'; 
 import { Person } from './services/person';
@@ -21,10 +21,16 @@ export class App implements OnInit {
   public router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private eRef = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private platformId = inject(PLATFORM_ID);
 
   public userData: any = null;
   public showDropdown: boolean = false;
   public isLoading: boolean = true;
+  
+  // Propiedades para menú hamburguesa
+  public sidebarOpen: boolean = false;
+  public isMobile: boolean = false;
   
   public editProfile: any = {
     firstName: '',
@@ -36,13 +42,32 @@ export class App implements OnInit {
 
   @HostListener('document:click', ['$event'])
   clickout(event: any) {
+    // Cerrar dropdown del perfil
     if (!this.eRef.nativeElement.contains(event.target)) {
       this.showDropdown = false;
     }
+    
+    // Cerrar sidebar si es móvil y se clickea fuera
+    if (this.isMobile && this.sidebarOpen) {
+      const sidebar = document.querySelector('.sidebar-mobile');
+      const hamburger = document.querySelector('.hamburger-btn');
+      if (sidebar && hamburger && 
+          !sidebar.contains(event.target) && 
+          !hamburger.contains(event.target)) {
+        this.closeSidebar();
+      }
+    }
+  }
+
+  // ✅ CORREGIDO: Sin parámetros
+  @HostListener('window:resize')
+  onResize() {
+    this.checkIfMobile();
   }
 
   ngOnInit(): void {
     this.checkUserSession();
+    this.checkIfMobile();
     
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -52,6 +77,36 @@ export class App implements OnInit {
       }
       this.cdr.detectChanges();
     });
+  }
+
+  checkIfMobile() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobile = window.innerWidth <= 768;
+      if (!this.isMobile) {
+        this.sidebarOpen = true;
+      } else {
+        this.sidebarOpen = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.sidebarOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  closeSidebar() {
+    this.sidebarOpen = false;
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = '';
+    }
   }
 
   checkUserSession() {
@@ -148,7 +203,7 @@ export class App implements OnInit {
             Swal.fire('Error', err.error?.msg || 'Error al actualizar perfil', 'error');
         }
     });
-}
+  }
 
   onPhotoSelected(event: any): void {
     const file = event.target.files[0];

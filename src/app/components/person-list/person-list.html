@@ -137,7 +137,7 @@
                             <input type="date" class="form-control border-0 shadow-sm" formControlName="date">
                             <div *ngIf="editForm.get('date')?.touched && editForm.get('date')?.invalid" class="text-danger small mt-1">
                                 <span *ngIf="editForm.get('date')?.errors?.['required']">La fecha de nacimiento es obligatoria.</span>
-                                <span *ng Oliv="editForm.get('date')?.errors?.['menorDeEdad']">Debe ser mayor de edad (18+).</span>
+                                <span *ngIf="editForm.get('date')?.errors?.['menorDeEdad']">Debe ser mayor de edad (18+).</span>
                             </div>
                         </div>
                         <div class="col-md-6">
