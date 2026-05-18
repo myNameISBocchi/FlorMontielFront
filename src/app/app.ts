@@ -28,7 +28,6 @@ export class App implements OnInit {
   public showDropdown: boolean = false;
   public isLoading: boolean = true;
   
-  // Propiedades para menú hamburguesa
   public sidebarOpen: boolean = false;
   public isMobile: boolean = false;
   
@@ -42,12 +41,11 @@ export class App implements OnInit {
 
   @HostListener('document:click', ['$event'])
   clickout(event: any) {
-    // Cerrar dropdown del perfil
+   
     if (!this.eRef.nativeElement.contains(event.target)) {
       this.showDropdown = false;
     }
     
-    // Cerrar sidebar si es móvil y se clickea fuera
     if (this.isMobile && this.sidebarOpen) {
       const sidebar = document.querySelector('.sidebar-mobile');
       const hamburger = document.querySelector('.hamburger-btn');
@@ -59,7 +57,6 @@ export class App implements OnInit {
     }
   }
 
-  // ✅ CORREGIDO: Sin parámetros
   @HostListener('window:resize')
   onResize() {
     this.checkIfMobile();

@@ -1,6 +1,4 @@
-/* Estilos para el menú hamburguesa responsive */
 
-/* Botón Hamburguesa */
 .hamburger-btn {
   position: fixed;
   top: 15px;
@@ -27,7 +25,7 @@
   transform: scale(0.95);
 }
 
-/* Overlay (fondo oscuro) */
+
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -48,7 +46,7 @@
   }
 }
 
-/* Sidebar Desktop */
+
 .sidebar-desktop {
   width: 250px;
   min-width: 250px;
@@ -58,7 +56,7 @@
   transition: all 0.3s ease;
 }
 
-/* Sidebar Mobile */
+
 .sidebar-mobile {
   position: fixed;
   top: 0;
@@ -79,7 +77,7 @@
   transform: translateX(0);
 }
 
-/* Botón cerrar dentro del sidebar móvil */
+
 .sidebar-close-btn {
   position: absolute;
   top: 15px;
@@ -106,20 +104,20 @@
   transform: scale(0.95);
 }
 
-/* Scroll dentro del sidebar móvil */
+
 .sidebar-mobile nav {
   overflow-y: auto;
   max-height: calc(100vh - 160px);
 }
 
-/* Ajustes responsivos */
+
 @media (max-width: 768px) {
-  /* Ajustar header para no chocar con botón hamburguesa */
+ 
   header {
     margin-left: 60px !important;
   }
   
-  /* Ajustar tamaños de fuente en móvil */
+  
   .sidebar-mobile .nav-link {
     font-size: 0.9rem;
     padding: 12px 16px !important;
@@ -129,12 +127,12 @@
     max-height: 70px;
   }
   
-  /* Reducir padding en móvil */
+  
   .sidebar-mobile .p-4 {
     padding: 1rem !important;
   }
   
-  /* Ajustar texto del header en móvil */
+  
   header h5 {
     font-size: 0.8rem;
   }
@@ -161,7 +159,7 @@
     font-size: 0.7rem;
   }
   
-  /* Ajustar dropdown en móvil */
+  
   .position-absolute.end-0 {
     width: 280px !important;
     right: -20px !important;
@@ -169,7 +167,7 @@
 }
 
 @media (min-width: 769px) {
-  /* Ocultar botones específicos de móvil en desktop */
+  
   .hamburger-btn,
   .sidebar-close-btn {
     display: none;
@@ -186,13 +184,13 @@
   color: white !important;
 }
 
-/* Animación suave para el sidebar */
+
 .sidebar-mobile,
 .sidebar-overlay {
   will-change: transform, opacity;
 }
 
-/* Mejora scroll en móvil */
+ 
 .sidebar-mobile::-webkit-scrollbar {
   width: 4px;
 }
@@ -210,12 +208,12 @@
   background: #b02a37;
 }
 
-/* Mejoras para el dropdown del perfil */
+
 .dropdown-menu-custom {
   z-index: 1050;
 }
 
-/* Ajuste para modales en móvil */
+
 @media (max-width: 576px) {
   .modal-dialog {
     margin: 0.5rem;
