@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RoleManagement } from './role-management';
+import { CityList } from './city-list';
 
-describe('RoleManagement', () => {
-  let component: RoleManagement;
-  let fixture: ComponentFixture<RoleManagement>;
+describe('CityList', () => {
+  let component: CityList;
+  let fixture: ComponentFixture<CityList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoleManagement]
+      imports: [CityList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RoleManagement);
+    fixture = TestBed.createComponent(CityList);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

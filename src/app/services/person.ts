@@ -21,8 +21,9 @@ export class Person {
   
   searchPeople(data:string): Observable<any>{
     const params = new HttpParams().set('firstName', data);
-      return this.http.get<any>(`${this.apiUrl}/search`,{ params } );
+    return this.http.get<any>(`${this.apiUrl}/search`,{ params } );
   }
+  
   assignRoles(id: string, roles: string[]): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${id}/roles`, { roles });
   }
@@ -65,16 +66,22 @@ export class Person {
 
   getRoles():Observable<any>{
     return this.http.get<any>(`${this.apiRoles}`);
-    
   }
 
-getCouncilsByComunity(comunityId: string): Observable<any> {
-  return this.http.get<any>(`${this.apiCouncil}/bycomunity/${comunityId}`);
+  getCouncilsByComunity(comunityId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiCouncil}/bycomunity/${comunityId}`);
+  }
+
+  getSubcommittees(parentId:string):Observable<any>{
+    return this.http.get<any>(`${this.apiCommitte}/subCommittees/${parentId}`);
+  }
+
+  updateOwnProfile(data: any): Observable<any> {
+    console.log('updateOwnProfile llamado con:', data);
+    return this.http.post(`${this.apiUrl}/update-own`, data);
 }
 
-getSubcommittees(parentId:string):Observable<any>{
-  return this.http.get<any>(`${this.apiCommitte}/subCommittees/${parentId}`);
-
+uploadOwnPhoto(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/upload-photo-own`, formData);
 }
-
 }

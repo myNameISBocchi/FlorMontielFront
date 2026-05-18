@@ -1,34 +1,35 @@
-
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Role {
-    roleId?: string;
-    roleName: string;
+export interface Privilege {
+    privilegeId?: string;
+    privilegeName: string;
+    route: string;
+    status?: number;
     blocked?: number;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class RoleService {
+export class PrivilegeService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost/app-back/public/api/roles';
+    private apiUrl = 'http://localhost/app-back/public/api/privileges';
 
-    getRoles(): Observable<any> {
+    getPrivileges(): Observable<any> {
         return this.http.get(this.apiUrl);
     }
 
-    createRole(data: Role): Observable<any> {
+    createPrivilege(data: Privilege): Observable<any> {
         return this.http.post(this.apiUrl, data);
     }
 
-    updateRole(id: string, data: Role): Observable<any> {
+    updatePrivilege(id: string, data: Privilege): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, data);
     }
 
-    deleteRole(id: string): Observable<any> {
+    deletePrivilege(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`);
     }
 }

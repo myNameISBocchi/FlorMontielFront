@@ -131,20 +131,27 @@ export class PersonList implements OnInit, OnDestroy {
     this.personService.getCity().subscribe(res => this.city = res?.results || res?.result || res || []);
   }
 
-  loadPeoples() {
+ loadPeoples() {
     this.personService.getPeoples().subscribe({
-      next: (data: any) => {
-        this.peoples = data.results;
-        this.filteredPeoples = data.results || [];
-        this.currentPage = 1;
-        this.updatePagination();
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error:', err);
-      }
+        next: (data: any) => {
+            
+            this.peoples = (data.results || []).map((person: any) => {
+                if (person.roleName && typeof person.roleName === 'string') {
+                    person.roleList = person.roleName.split(', ');
+                } else if (Array.isArray(person.roleName)) {
+                    person.roleList = person.roleName;
+                } else {
+                    person.roleList = [];
+                }
+                return person;
+            });
+            this.filteredPeoples = [...this.peoples];
+            this.updatePagination();
+            this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error:', err)
     });
-  }
+}
 
   goToRegister() {
     this.router.navigate(['/personForm']);

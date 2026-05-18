@@ -17,32 +17,94 @@
                         <i class="fa-solid fa-house me-3"></i>Inicio
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
-                        <i class="fa-solid fa-people-group me-2"></i>Gestionar Comunidad
-                    </a>
-                </li>
                 
+                @if(authService.hasPrivilege('comunities.index')){
                     <li class="nav-item">
-                        @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
-                    <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
-                        <i class="fa-solid fa-user-group me-3"></i>Gestionar Voceros
-                    </a>
+                        <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-people-group me-2"></i>Gestionar Comunidad
+                        </a>
+                    </li>
                 }
-                </li>
+                
+                @if(authService.hasPrivilege('peoples.index')){
+                    <li class="nav-item">
+                        <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-user-group me-3"></i>Gestionar Voceros
+                        </a>
+                    </li>
+                }
 
+                @if(authService.hasPrivilege('councils.index')){
+                    <li class="nav-item">
+                        <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-handshake-angle me-2"></i>Gestionar Consejos
+                        </a>
+                    </li>
+                }
                 
+                @if(authService.hasPrivilege('committees.index')){
+                    <li class="nav-item">
+                        <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-users me-3"></i>Gestionar Comites
+                        </a>
+                    </li>
+                }
+
+                @if(authService.hasPrivilege('roles.index') || authService.hasPrivilege('privileges.index') || authService.hasPrivilege('countries.index')){
+                    <li class="nav-item mt-3">
+                        <div class="px-4 py-2">
+                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Administración</small>
+                        </div>
+                    </li>
+                }
                 
-                <li class="nav-item">
-                    <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
-                        <i class="fa-solid fa-handshake-angle me-2"></i>Gestionar Consejos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
-                        <i class="fa-solid fa-users me-3"></i>Gestionar Comites
-                    </a>
-                </li>
+                @if(authService.hasPrivilege('roles.index')){
+                    <li class="nav-item">
+                        <a routerLink="/admin/roles" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-tags me-3"></i>Gestionar Roles
+                        </a>
+                    </li>
+                }
+                
+                @if(authService.hasPrivilege('privileges.index')){
+                    <li class="nav-item">
+                        <a routerLink="/admin/privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-key me-3"></i>Gestionar Privilegios
+                        </a>
+                    </li>
+                }
+                
+                @if(authService.hasPrivilege('role_privileges.index')){
+                    <li class="nav-item">
+                        <a routerLink="/admin/role-privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-link me-3"></i>Asignar Privilegios
+                        </a>
+                    </li>
+                }
+                
+                @if(authService.hasPrivilege('countries.index')){
+                    <li class="nav-item">
+                        <a routerLink="/countries" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-globe me-3"></i>Gestionar Países
+                        </a>
+                    </li>
+                }
+                
+                @if(authService.hasPrivilege('states.index')){
+                    <li class="nav-item">
+                        <a routerLink="/states" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-map me-3"></i>Gestionar Estados
+                        </a>
+                    </li>
+                }
+                
+                @if(authService.hasPrivilege('cities.index')){
+                    <li class="nav-item">
+                        <a routerLink="/cities" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3">
+                            <i class="fa-solid fa-city me-3"></i>Gestionar Ciudades
+                        </a>
+                    </li>
+                }
             </ul>
         </nav>
 
@@ -72,49 +134,68 @@
 
                 <div *ngIf="showDropdown" (click)="$event.stopPropagation()" class="position-absolute end-0 bg-white shadow-lg rounded-4 p-4 mt-3 border-0" style="z-index: 1050; width: 320px;">
                     <div class="text-center mb-3">
-                        <h6 class="fw-bold mb-1 text-dark">{{ userData.firstName }} {{ userData.lastName }}</h6>
-                        <span class="badge bg-light text-danger px-3 py-2 rounded-pill small fw-bold" style="letter-spacing: 1px;">
-                            {{ userData.roles?.[0] || 'ADMINISTRADOR' }}
+                        <div class="position-relative d-inline-block">
+                            <img *ngIf="userData.photoPerson" 
+                                 [src]="'http://localhost/app-back/public/' + userData.photoPerson" 
+                                 class="rounded-circle shadow-sm border" 
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                            <i *ngIf="!userData.photoPerson" class="fa-solid fa-circle-user fa-5x text-secondary"></i>
+                            
+                            <label class="position-absolute bottom-0 end-0 bg-danger rounded-circle p-1" style="cursor: pointer;">
+                                <i class="fa-solid fa-camera fa-xs text-white"></i>
+                                <input type="file" hidden (change)="onPhotoSelected($event)" accept="image/*">
+                            </label>
+                        </div>
+                        <h6 class="fw-bold mb-1 mt-2 text-dark">{{ userData.firstName }} {{ userData.lastName }}</h6>
+                        <span class="badge bg-light text-danger px-3 py-2 rounded-pill small fw-bold">
+                            {{ userData.roles?.[0] || 'SIN ROL' }}
                         </span>
                     </div>
 
                     <hr class="text-muted opacity-25">
 
-                    <div class="d-flex flex-column gap-3">
+                    <div class="d-flex flex-column gap-2">
                         <div class="d-flex align-items-center gap-3">
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                              <i class="fa-solid fa-house"></i>
+                                <i class="fa-solid fa-building"></i>
                             </div>
                             <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold" style="font-size: 0.65rem;">Comunidad</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.comunityName }}</p>
+                                <p class="mb-0 text-muted small text-uppercase fw-bold">Comunidad</p>
+                                <p class="mb-0 fw-bold text-dark small">{{ userData.comunityName || 'N/A' }}</p>
                             </div>
                         </div>
 
                         <div class="d-flex align-items-center gap-3">
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-handshake text-dark"></i>
+                                <i class="fa-solid fa-handshake"></i>
                             </div>
                             <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold" style="font-size: 0.65rem;">Consejo</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.councilName }}</p>
+                                <p class="mb-0 text-muted small text-uppercase fw-bold">Consejo</p>
+                                <p class="mb-0 fw-bold text-dark small">{{ userData.councilName || 'N/A' }}</p>
                             </div>
                         </div>
 
                         <div class="d-flex align-items-center gap-3">
                             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-people-roof"></i>
+                                <i class="fa-solid fa-users"></i>
                             </div>
                             <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold" style="font-size: 0.65rem;">Comité</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.committeeName }}</p>
+                                <p class="mb-0 text-muted small text-uppercase fw-bold">Comité</p>
+                                <p class="mb-0 fw-bold text-dark small">{{ userData.committeeName || 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
 
                     <hr class="text-muted opacity-25 mt-3">
 
-                    <button (click)="logout()" class="btn btn-outline-danger w-100 rounded-pill fw-bold py-2 mt-2" style="font-size: 0.9rem;">
+                    <button class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 mb-2" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editProfileModal"
+                            (click)="openEditProfileModal()">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>Editar mis datos
+                    </button>
+
+                    <button (click)="logout()" class="btn btn-outline-danger w-100 rounded-pill fw-bold py-2">
                         <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Salir del sistema
                     </button>
                 </div>
@@ -129,4 +210,43 @@
 
 <div *ngIf="!isLoading && router.url === '/login'">
     <router-outlet></router-outlet>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fa-solid fa-user-edit me-2"></i>Editar mi perfil</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Nombres</label>
+                    <input type="text" class="form-control" [(ngModel)]="editProfile.firstName">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Apellidos</label>
+                    <input type="text" class="form-control" [(ngModel)]="editProfile.lastName">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Correo Electrónico</label>
+                    <input type="email" class="form-control" [(ngModel)]="editProfile.email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Teléfono</label>
+                    <input type="text" class="form-control" [(ngModel)]="editProfile.phone" (input)="formatearTelefonoEdit($event)">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Nueva Contraseña (opcional)</label>
+                    <input type="password" class="form-control" [(ngModel)]="editProfile.password" placeholder="Dejar vacío para no cambiar">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" (click)="saveProfile()" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-save"></i> Guardar cambios
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
