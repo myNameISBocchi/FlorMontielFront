@@ -1,12 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Person } from '../../services/person';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { ReportService } from '../../services/report';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -16,7 +14,7 @@ import Swal from 'sweetalert2';
   templateUrl: './person-list.html',
   styleUrl: './person-list.css',
 })
-export class PersonList implements OnInit, OnDestroy {
+export class PersonList implements OnInit {
   private router = inject(Router);
   private personService = inject(Person);
   private cdr = inject(ChangeDetectorRef);
@@ -42,25 +40,14 @@ export class PersonList implements OnInit, OnDestroy {
   pagesArray: number[] = [];
   ocultarPassword: boolean = true;
   editForm!: FormGroup;
-
-  private searchSubject = new Subject<string>();
-  private searchSubscription?: Subscription;
+  filteredCouncils: any[] = [];
+  filteredCommittees: any[] = [];
 
   ngOnInit(): void {
     this.loadPeoples();
     this.initEditForm();
     this.cargarCatalogos();
-
-    this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(term => {
-      this.executeSearch(term);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.searchSubscription?.unsubscribe();
+    this.loadAllCommittees();
   }
 
   initEditForm() {
@@ -72,18 +59,49 @@ export class PersonList implements OnInit, OnDestroy {
       phone: ['', [Validators.required, this.validarTelefonoVenezuela]],
       date: ['', [Validators.required, this.validarMayorDeEdad]],
       cityId: ['', [Validators.required]],
+      comunityId: [''],
+      councilId: [''],
+      committeeId: [''],
       password: ['', [Validators.minLength(8)]]
     });
   }
 
+  loadAllCommittees() {
+    this.personService.getCommitte().subscribe({
+      next: (res: any) => {
+        this.committee = res?.result || res?.results || res || [];
+        this.filteredCommittees = this.committee;
+      }
+    });
+  }
+
   onSearch() {
-    this.searchSubject.next(this.searchTerm.trim());
+    const term = this.searchTerm.trim().toLowerCase();
+    
+    if (!term) {
+      this.filteredPeoples = [...this.peoples];
+    } else {
+      this.filteredPeoples = this.peoples.filter(person => {
+        return person.firstName?.toLowerCase().includes(term) ||
+               person.lastName?.toLowerCase().includes(term) ||
+               person.identification?.toLowerCase().includes(term) ||
+               person.email?.toLowerCase().includes(term) ||
+               person.phone?.toLowerCase().includes(term) ||
+               person.comunityName?.toLowerCase().includes(term) ||
+               person.councilName?.toLowerCase().includes(term) ||
+               person.committeeName?.toLowerCase().includes(term) ||
+               person.roleName?.toLowerCase().includes(term);
+      });
+    }
+    
+    this.currentPage = 1;
+    this.updatePagination();
+    this.cdr.detectChanges();
   }
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredPeoples.length / this.pageSize);
     this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.pagedPeoples = this.filteredPeoples.slice(startIndex, endIndex);
@@ -96,45 +114,16 @@ export class PersonList implements OnInit, OnDestroy {
     this.updatePagination();
   }
 
-  executeSearch(data: string) {
-    if (!data) {
-      this.filteredPeoples = [...this.peoples];
-      this.currentPage = 1;
-      this.updatePagination();
-      this.cdr.detectChanges();
-      return;
-    }
-
-    this.personService.searchPeople(data).subscribe({
-      next: (res: any) => {
-        const results = Array.isArray(res) ? res : (res.results || []);
-        setTimeout(() => {
-          this.filteredPeoples = results;
-          this.cdr.detectChanges();
-        }, 0);
-      },
-      error: (err) => {
-        console.error('error', err);
-        setTimeout(() => {
-          this.filteredPeoples = [];
-          this.cdr.detectChanges();
-        }, 0);
-      }
-    });
-  }
-
   cargarCatalogos() {
     this.personService.getRoles().subscribe(res => this.roles = res?.results || res || []);
     this.personService.getComunity().subscribe(res => this.comunity = res?.result || res?.results || res || []);
     this.personService.getCouncil().subscribe(res => this.council = res?.result || res?.results || res || []);
-    this.personService.getCommitte().subscribe(res => this.committee = res?.result || res?.results || res || []);
     this.personService.getCity().subscribe(res => this.city = res?.results || res?.result || res || []);
   }
 
- loadPeoples() {
+  loadPeoples() {
     this.personService.getPeoples().subscribe({
         next: (data: any) => {
-            
             this.peoples = (data.results || []).map((person: any) => {
                 if (person.roleName && typeof person.roleName === 'string') {
                     person.roleList = person.roleName.split(', ');
@@ -148,10 +137,9 @@ export class PersonList implements OnInit, OnDestroy {
             this.filteredPeoples = [...this.peoples];
             this.updatePagination();
             this.cdr.detectChanges();
-        },
-        error: (err) => console.error('Error:', err)
+        }
     });
-}
+  }
 
   goToRegister() {
     this.router.navigate(['/personForm']);
@@ -174,8 +162,23 @@ export class PersonList implements OnInit, OnDestroy {
       phone: this.personSelect.phone,
       date: fechaFormateada,
       cityId: this.personSelect.cityId,
+      comunityId: this.personSelect.comunityId || null,
+      councilId: this.personSelect.councilId || null,
+      committeeId: this.personSelect.committeeId || null,
       password: '' 
     });
+
+    if (this.personSelect.comunityId) {
+      this.personService.getCouncilsByComunity(this.personSelect.comunityId).subscribe({
+        next: (res: any) => {
+          this.filteredCouncils = res.results || res || [];
+        }
+      });
+    }
+
+    if (this.filteredCommittees.length === 0) {
+      this.loadAllCommittees();
+    }
 
     if (person.roleId) {
       const currentRoles = Array.isArray(person.roleId) ? person.roleId : [person.roleId];
@@ -184,6 +187,23 @@ export class PersonList implements OnInit, OnDestroy {
       });
     }
   }
+
+  onComunityChange(event: any) {
+    const comunityId = event.target.value;
+    if (comunityId) {
+        this.personService.getCouncilsByComunity(comunityId).subscribe({
+            next: (res: any) => {
+                this.filteredCouncils = res.results || res || [];
+                this.editForm.patchValue({ councilId: null });
+            }
+        });
+    } else {
+        this.filteredCouncils = [];
+        this.editForm.patchValue({ councilId: null });
+    }
+  }
+
+  onCouncilChange(event: any) {}
 
   isRoleSelected(roleId: string): boolean {
     return !!this.selectedRolesMap[roleId];
@@ -196,17 +216,11 @@ export class PersonList implements OnInit, OnDestroy {
   saveRoles() {
     if (!this.personSelect || !this.personSelect.personId) return;
 
-    const rolesToSave = Object.keys(this.selectedRolesMap)
-      .filter(key => this.selectedRolesMap[key] === true);
+    const rolesToSave = Object.keys(this.selectedRolesMap).filter(key => this.selectedRolesMap[key] === true);
 
     this.personService.assignRoles(this.personSelect.personId, rolesToSave).subscribe({
       next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Roles actualizados',
-          timer: 2000,
-          showConfirmButton: false
-        });
+        Swal.fire({ icon: 'success', title: 'Roles actualizados', timer: 2000, showConfirmButton: false });
         this.loadPeoples();
         const modalElement = document.getElementById('assignRolesModal');
         if (modalElement) {
@@ -214,9 +228,7 @@ export class PersonList implements OnInit, OnDestroy {
           if (bootstrapModal) bootstrapModal.hide();
         }
       },
-      error: (err) => {
-        Swal.fire('Error', 'No se pudieron asignar los roles', 'error');
-      }
+      error: () => Swal.fire('Error', 'No se pudieron asignar los roles', 'error')
     });
   }
 
@@ -234,16 +246,10 @@ export class PersonList implements OnInit, OnDestroy {
       if (result.isConfirmed) {
         this.personService.deletePerson(id).subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Eliminado',
-              text: 'Registro eliminado con éxito',
-              timer: 2000,
-              showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Eliminado', text: 'Registro eliminado con éxito', timer: 2000, showConfirmButton: false });
             this.loadPeoples();
           },
-          error: (err) => Swal.fire('Error', 'No se pudo eliminar el registro', 'error')
+          error: () => Swal.fire('Error', 'No se pudo eliminar el registro', 'error')
         });
       }
     });
@@ -254,19 +260,13 @@ export class PersonList implements OnInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append('photoPerson', file);
-
       this.personService.uploadPhoto(id, formData).subscribe({
-        next: (res) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Imagen actualizada',
-            timer: 1500,
-            showConfirmButton: false
-          });
+        next: () => {
+          Swal.fire({ icon: 'success', title: 'Imagen actualizada', timer: 1500, showConfirmButton: false });
           this.loadPeoples();
           this.cdr.detectChanges();
         },
-        error: (err) => Swal.fire('Error', 'Error al subir la imagen', 'error')
+        error: () => Swal.fire('Error', 'Error al subir la imagen', 'error')
       });
     }
   }
@@ -275,52 +275,43 @@ export class PersonList implements OnInit, OnDestroy {
     if (!this.personSelect || !this.personSelect.personId) return;
 
     if (this.editForm.valid) {
-      const id = this.personSelect.personId;
-      const formValues = this.editForm.value;
+        const id = this.personSelect.personId;
+        const formValues = this.editForm.value;
 
-      const dataToUpdate: any = {
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        identification: formValues.identification,
-        phone: formValues.phone,
-        date: formValues.date,
-        cityId: formValues.cityId,
-        email: formValues.email,
-        status: this.personSelect.status
-      };
+        const dataToUpdate: any = {
+            firstName: formValues.firstName,
+            lastName: formValues.lastName,
+            identification: formValues.identification,
+            phone: formValues.phone,
+            date: formValues.date,
+            cityId: formValues.cityId,
+            email: formValues.email,
+            status: this.personSelect.status,
+            comunityId: formValues.comunityId,
+            councilId: formValues.councilId,
+            committeeId: formValues.committeeId
+        };
 
-      if (formValues.password && formValues.password.trim() !== '') {
-        dataToUpdate.password = formValues.password;
-      }
-
-      this.personService.updatePerson(id, dataToUpdate).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Actualizado!',
-            text: 'Registro actualizado con éxito',
-            timer: 2000,
-            showConfirmButton: false
-          });
-          this.loadPeoples();
-          this.personSelect = null;
-          const modalElement = document.getElementById('editPersonModal');
-          if (modalElement) {
-            const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
-            if (bootstrapModal) bootstrapModal.hide();
-          }
-        },
-        error: (err) => {
-          Swal.fire('Error', 'No se pudo actualizar el registro', 'error');
+        if (formValues.password && formValues.password.trim() !== '') {
+            dataToUpdate.password = formValues.password;
         }
-      });
+
+        this.personService.updatePerson(id, dataToUpdate).subscribe({
+            next: () => {
+                Swal.fire({ icon: 'success', title: '¡Actualizado!', text: 'Registro actualizado con éxito', timer: 2000, showConfirmButton: false });
+                this.loadPeoples();
+                this.personSelect = null;
+                const modalElement = document.getElementById('editPersonModal');
+                if (modalElement) {
+                    const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+                    if (bootstrapModal) bootstrapModal.hide();
+                }
+            },
+            error: () => Swal.fire('Error', 'No se pudo actualizar el registro', 'error')
+        });
     } else {
-      this.editForm.markAllAsTouched();
-      Swal.fire({
-        icon: 'warning',
-        title: 'Campos incompletos o incorrectos',
-        text: 'Por favor, revisa las validaciones antes de guardar'
-      });
+        this.editForm.markAllAsTouched();
+        Swal.fire({ icon: 'warning', title: 'Campos incompletos o incorrectos', text: 'Por favor, revisa las validaciones antes de guardar' });
     }
   }
 
@@ -330,12 +321,8 @@ export class PersonList implements OnInit, OnDestroy {
 
   generarReporteGeneral() {
     const filtros: any = {};
-    if (this.selectedCouncilId) {
-        filtros.councilId = this.selectedCouncilId;
-    }
-    if (this.searchTerm) {
-        filtros.firstName = this.searchTerm.trim();
-    }
+    if (this.selectedCouncilId) filtros.councilId = this.selectedCouncilId;
+    if (this.searchTerm) filtros.firstName = this.searchTerm.trim();
 
     this.reportService.imprimirVoceros(filtros).subscribe({
         next: (data: Blob) => {
@@ -348,9 +335,6 @@ export class PersonList implements OnInit, OnDestroy {
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
-        },
-        error: (err) => {
-            console.error('Error al descargar el reporte:', err);
         }
     });
   }
@@ -369,15 +353,11 @@ export class PersonList implements OnInit, OnDestroy {
   validarMayorDeEdad(control: AbstractControl): ValidationErrors | null {
     const valor = control.value;
     if (!valor) return null;
-
     const fechaNacimiento = new Date(valor);
     const hoy = new Date();
     let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
     const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-      edad--;
-    }
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) edad--;
     return edad >= 18 ? null : { menorDeEdad: true };
   }
 
@@ -385,12 +365,8 @@ export class PersonList implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     let valor = input.value.replace(/\D/g, '');
     if (valor.length > 8) valor = valor.slice(0, 8);
-
     let valorFormateado = valor;
-    if (valor.length > 0) {
-      valorFormateado = new Intl.NumberFormat('es-VE').format(parseInt(valor, 10));
-    }
-
+    if (valor.length > 0) valorFormateado = new Intl.NumberFormat('es-VE').format(parseInt(valor, 10));
     input.value = valorFormateado;
     this.editForm.get('identification')?.setValue(valorFormateado, { emitEvent: false });
     this.editForm.get('identification')?.markAsTouched();
@@ -400,22 +376,14 @@ export class PersonList implements OnInit, OnDestroy {
   formatearTelefono(event: Event): void {
     const input = event.target as HTMLInputElement;
     let valor = input.value;
-
-    if (!valor.startsWith('+58 ')) {
-      valor = '+58 ' + valor.replace(/^\+58\s*/, '');
-    }
+    if (!valor.startsWith('+58 ')) valor = '+58 ' + valor.replace(/^\+58\s*/, '');
     let digitos = valor.substring(4).replace(/\D/g, '');
-    if (digitos.startsWith('0')) {
-      digitos = digitos.substring(1);
-    }
-
+    if (digitos.startsWith('0')) digitos = digitos.substring(1);
     if (digitos.length > 10) digitos = digitos.slice(0, 10);
-
     let formateado = '+58 ';
     if (digitos.length > 0) formateado += digitos.substring(0, 3);
     if (digitos.length > 3) formateado += '-' + digitos.substring(3, 6);
     if (digitos.length > 6) formateado += '-' + digitos.substring(6, 10);
-
     input.value = formateado;
     this.editForm.get('phone')?.setValue(formateado, { emitEvent: false });
     this.editForm.get('phone')?.markAsTouched();

@@ -73,15 +73,15 @@ export class Person {
   }
 
   getSubcommittees(parentId:string):Observable<any>{
-    return this.http.get<any>(`${this.apiCommitte}/subCommittees/${parentId}`);
+    return this.http.get<any>(`${this.apiCommitte}/subcommittees/${parentId}`);
   }
 
   updateOwnProfile(data: any): Observable<any> {
     console.log('updateOwnProfile llamado con:', data);
     return this.http.post(`${this.apiUrl}/update-own`, data);
-}
+  }
 
-uploadOwnPhoto(formData: FormData): Observable<any> {
+  uploadOwnPhoto(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/upload-photo-own`, formData);
-}
+  }
 }

@@ -19,6 +19,8 @@ export class CommitteeList implements OnInit {
   public authService = inject(Auth);
 
   committees: any[] = [];
+  filteredCommittees: any[] = [];
+  searchTerm: string = '';
   pagedCommittees: any[] = [];
   currentPage: number = 1;
   perPage: number = 6;
@@ -38,6 +40,7 @@ export class CommitteeList implements OnInit {
     this.committeeService.getCommittee().subscribe({
       next: (res) => {
         this.committees = res.result;
+        this.filteredCommittees = [...this.committees];
         this.updatePagination();
         this.currentPage = 1;
         this.cdr.detectChanges();
@@ -48,11 +51,27 @@ export class CommitteeList implements OnInit {
     });
   }
 
+  onSearch() {
+    const term = this.searchTerm.trim().toLowerCase();
+    
+    if (!term) {
+      this.filteredCommittees = [...this.committees];
+    } else {
+      this.filteredCommittees = this.committees.filter(item => {
+        return item.committeeName?.toLowerCase().includes(term);
+      });
+    }
+    
+    this.currentPage = 1;
+    this.updatePagination();
+    this.cdr.detectChanges();
+  }
+
   updatePagination() {
-    this.totalPages = Math.ceil(this.committees.length / this.perPage);
+    this.totalPages = Math.ceil(this.filteredCommittees.length / this.perPage);
     const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
-    this.pagedCommittees = this.committees.slice(startIndex, endIndex);
+    this.pagedCommittees = this.filteredCommittees.slice(startIndex, endIndex);
   }
 
   goTopage(page: number) {

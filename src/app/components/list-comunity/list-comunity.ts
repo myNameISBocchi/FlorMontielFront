@@ -19,6 +19,8 @@ export class ListComunity implements OnInit {
   public authService = inject(Auth);
 
   comunity: any[] = [];
+  filteredComunity: any[] = [];
+  searchTerm: string = '';
   comunitySelect: any = null;
   pagedComunity: any[] = [];
   currentPage: number = 1;
@@ -33,6 +35,7 @@ export class ListComunity implements OnInit {
     this.comunityService.getComunity().subscribe({
       next: (data: any) => {
         this.comunity = data.result;
+        this.filteredComunity = [...this.comunity];
         this.updatePagination();
         this.cdr.detectChanges();
       },
@@ -42,12 +45,28 @@ export class ListComunity implements OnInit {
     });
   }
 
+  onSearch() {
+    const term = this.searchTerm.trim().toLowerCase();
+    
+    if (!term) {
+      this.filteredComunity = [...this.comunity];
+    } else {
+      this.filteredComunity = this.comunity.filter(item => {
+        return item.comunityName?.toLowerCase().includes(term) ||
+               item.googleMaps?.toLowerCase().includes(term);
+      });
+    }
+    
+    this.currentPage = 1;
+    this.updatePagination();
+    this.cdr.detectChanges();
+  }
+
   updatePagination() {
-    this.totalPages = Math.ceil(this.comunity.length / this.perPage);
+    this.totalPages = Math.ceil(this.filteredComunity.length / this.perPage);
     const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
-
-    this.pagedComunity = this.comunity.slice(startIndex, endIndex);
+    this.pagedComunity = this.filteredComunity.slice(startIndex, endIndex);
   }
 
   goToPage(page: number) {

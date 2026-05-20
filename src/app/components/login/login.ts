@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 })
 export class Login {
   loginForm: FormGroup;
+  showPassword: boolean = false;
 
   private authService = inject(Auth);
   private router = inject(Router);
@@ -23,6 +24,10 @@ export class Login {
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required])
     });
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit() {

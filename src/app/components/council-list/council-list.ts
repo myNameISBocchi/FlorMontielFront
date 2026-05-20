@@ -15,6 +15,8 @@ import Swal from 'sweetalert2';
 })
 export class CouncilList implements OnInit {
   councils: any[] = [];
+  filteredCouncils: any[] = [];
+  searchTerm: string = '';
   councilSelect: any = null;
   cities: any[] = [];
   comunities: any[] = [];
@@ -35,6 +37,7 @@ export class CouncilList implements OnInit {
     this.council.findAll().subscribe({
       next: (res: any) => {
         this.councils = res.results || res.result || res;
+        this.filteredCouncils = [...this.councils];
         this.currentPage = 1;
         this.updatePagination();
         this.cdr.detectChanges();
@@ -45,11 +48,29 @@ export class CouncilList implements OnInit {
     });
   }
 
+  onSearch() {
+    const term = this.searchTerm.trim().toLowerCase();
+    
+    if (!term) {
+      this.filteredCouncils = [...this.councils];
+    } else {
+      this.filteredCouncils = this.councils.filter(item => {
+        return item.councilName?.toLowerCase().includes(term) ||
+               item.comunityName?.toLowerCase().includes(term) ||
+               item.cityName?.toLowerCase().includes(term);
+      });
+    }
+    
+    this.currentPage = 1;
+    this.updatePagination();
+    this.cdr.detectChanges();
+  }
+
   updatePagination() {
-    this.totalPages = Math.ceil(this.councils.length / this.perPage);
+    this.totalPages = Math.ceil(this.filteredCouncils.length / this.perPage);
     const startIndex = (this.currentPage - 1) * this.perPage;
     const endIndex = startIndex + this.perPage;
-    this.pagedCouncils = this.councils.slice(startIndex, endIndex);
+    this.pagedCouncils = this.filteredCouncils.slice(startIndex, endIndex);
   }
 
   goToPage(page: number) {

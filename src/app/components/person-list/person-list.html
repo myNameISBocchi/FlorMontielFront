@@ -157,6 +157,31 @@
                                 <span *ngIf="editForm.get('cityId')?.errors?.['required']">La ciudad o estado es obligatorio.</span>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">COMUNIDAD</label>
+                            <select class="form-select border-0 shadow-sm" formControlName="comunityId" (change)="onComunityChange($event)">
+                                <option [value]="null">Seleccionar comunidad</option>
+                                <option *ngFor="let c of comunity" [value]="c.comunityId">{{ c.comunityName }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">CONSEJO COMUNAL</label>
+                            <select class="form-select border-0 shadow-sm" formControlName="councilId" (change)="onCouncilChange($event)">
+                                <option [value]="null">Seleccionar consejo</option>
+                                <option *ngFor="let c of filteredCouncils" [value]="c.councilId">{{ c.councilName }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">COMITÉ</label>
+                            <select class="form-select border-0 shadow-sm" formControlName="committeeId">
+                                <option [value]="null">Seleccionar comité</option>
+                                <option *ngFor="let c of filteredCommittees" [value]="c.committeeId">{{ c.committeeName }}</option>
+                            </select>
+                        </div>
+
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-muted">NUEVA CONTRASEÑA (OPCIONAL)</label>
                             <div class="input-group">

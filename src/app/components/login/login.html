@@ -30,8 +30,11 @@
             <span class="input-group-text bg-white border-0 text-muted">
               <i class="fa-solid fa-key"></i>
             </span>
-            <input type="password" class="form-control border-0 bg-white" 
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control border-0 bg-white" 
                    formControlName="password" placeholder="••••••••" required>
+            <button class="btn btn-outline-secondary border-0 bg-white" type="button" (click)="togglePassword()">
+              <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
           </div>
           @if (isFieldInvalid('password')) {
             <span class="text-danger small ms-1">La contraseña es requerida</span>
