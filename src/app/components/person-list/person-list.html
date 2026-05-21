@@ -1,16 +1,16 @@
-<div class="container-fluid px-3 px-md-4 py-3">
-    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded">
-        <h4 class="mb-0">Gestión de Voceros</h4>
+<div class="container-fluid px-3 px-md-4 px-lg-5 py-3 py-md-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mb-md-4 p-3 bg-white shadow-sm rounded gap-3">
+        <h4 class="mb-0 fs-5 fs-md-4">Gestión de Voceros</h4>
         
-        <div class="d-flex gap-2 align-items-center">
-            <div style="width: 200px;">
+        <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center w-100 w-md-auto">
+            <div class="w-100 w-sm-auto" style="max-width: 200px;">
                 <select class="form-select form-select-sm rounded-pill shadow-sm" [(ngModel)]="selectedCouncilId" name="filterCouncil">
                     <option [value]="null">Todos los Consejos</option>
                     <option *ngFor="let c of council" [value]="c.councilId">{{ c.councilName }}</option>
                 </select>
             </div>
 
-            <div style="width: 250px;">
+            <div class="w-100 w-sm-auto" style="max-width: 250px;">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
                         <i class="fas fa-search text-muted"></i>
@@ -24,29 +24,29 @@
                 </div>
             </div>
 
-            <button class="btn btn-dark btn-sm rounded-circle shadow-sm" (click)="generarReporteGeneral()" title="Imprimir Reporte">
+            <button class="btn-print shadow-sm align-self-end align-self-sm-center ms-sm-auto" (click)="generarReporteGeneral()" title="Imprimir Reporte">
                 <i class="fas fa-print"></i>
             </button>
         </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12 text-end">
-            <button class="btn btn-danger btn-sm px-3 shadow-sm" (click)="goToRegister()">
-                <i class="fa-solid fa-floppy-disk"></i> Registrar Vocero
+            <button class="btn btn-danger btn-sm px-3 px-md-4 shadow-sm" (click)="goToRegister()">
+                <i class="fa-solid fa-floppy-disk d-none d-sm-inline-block"></i> Registrar Vocero
             </button>
         </div>
     </div>
 
-    <div class="row g-3">
-        <div *ngFor="let person of pagedPeoples" class="col-auto mb-4">
-            <div class="person-card shadow-sm border">
+    <div class="row g-3 g-md-4 g-lg-4">
+        <div *ngFor="let person of pagedPeoples" class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3 mb-md-4">
+            <div class="person-card w-100">
                 <div class="img-wrapper">
                     <img [src]="person.photoPerson ? 'http://localhost/app-back/public/' + person.photoPerson : '/img/default.png'" 
                          [alt]="person.firstName"
                          (error)="handleImageError($event)">
                 </div>
-                <div class="card-info p-3">
+                <div class="card-info p-2 p-md-3">
                     <h5 class="title fw-bold mb-1">{{ person.firstName }} {{ person.lastName }}</h5>
                     <p class="detail mb-1"><strong>COMUNIDAD:  </strong> <strong>{{ person.comunityName || 'N/A' }}</strong></p>
                     <p class="detail mb-1"><strong>CONSEJO:  </strong> <strong>{{ person.councilName || 'N/A' }}</strong></p>
@@ -89,19 +89,55 @@
             </div>
         </div>
     </div>
+
+    <div class="d-flex justify-content-center mt-3 mt-md-4 mb-4 mb-md-5">
+      <nav aria-label="Navegación de voceros" *ngIf="totalPages > 1">
+        <ul class="pagination shadow-sm flex-wrap justify-content-center" style="border-radius: 5px; overflow: hidden;">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link border-end-0 bg-light text-primary px-2 px-md-3 py-2" 
+               (click)="setPage(currentPage - 1)" 
+               style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
+              <span class="d-none d-sm-inline">Anterior</span>
+              <span class="d-inline d-sm-none">&laquo;</span>
+            </a>
+          </li>
+
+          <li class="page-item" *ngFor="let p of pagesArray" [class.active]="p === currentPage">
+            <a class="page-link px-2 px-md-3 d-flex align-items-center justify-content-center" 
+               [class.bg-primary]="p === currentPage" 
+               [class.text-white]="p === currentPage"
+               [class.bg-white]="p !== currentPage"
+               [class.text-primary]="p !== currentPage"
+               (click)="setPage(p)" 
+               style="cursor: pointer; min-width: 32px; height: 32px; font-size: 0.9rem; border-color: #dee2e6;">
+              {{ p }}
+            </a>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link border-start-0 bg-light text-primary px-2 px-md-3 py-2" 
+               (click)="setPage(currentPage + 1)" 
+               style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
+              <span class="d-none d-sm-inline">Siguiente</span>
+              <span class="d-inline d-sm-none">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
 </div>
 
 <div class="modal fade" id="editPersonModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-white p-4">
-                <h5 class="modal-title fw-bold"><i class="fas fa-user-edit me-2"></i>ACTUALIZAR DATOS DEL VOCERO</h5>
+            <div class="modal-header bg-danger text-white p-3 p-md-4">
+                <h5 class="modal-title fw-bold fs-6 fs-md-5"><i class="fas fa-user-edit me-2 d-none d-sm-inline-block"></i>ACTUALIZAR DATOS DEL VOCERO</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form *ngIf="personSelect" [formGroup]="editForm" (ngSubmit)="updatePerson()">
-                <div class="modal-body p-4 bg-light">
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                <div class="modal-body p-3 p-md-4 bg-light">
+                    <div class="row g-2 g-md-3">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">NOMBRES</label>
                             <input type="text" class="form-control border-0 shadow-sm" formControlName="firstName">
                             <div *ngIf="editForm.get('firstName')?.touched && editForm.get('firstName')?.invalid" class="text-danger small mt-1">
@@ -109,7 +145,7 @@
                                 <span *ngIf="editForm.get('firstName')?.errors?.['pattern']">Solo se admiten letras.</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">APELLIDOS</label>
                             <input type="text" class="form-control border-0 shadow-sm" formControlName="lastName">
                             <div *ngIf="editForm.get('lastName')?.touched && editForm.get('lastName')?.invalid" class="text-danger small mt-1">
@@ -117,14 +153,14 @@
                                 <span *ngIf="editForm.get('lastName')?.errors?.['pattern']">Solo se admiten letras.</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">CÉDULA</label>
                             <input type="text" class="form-control border-0 shadow-sm" formControlName="identification" (input)="formatearCedula($event)">
                             <div *ngIf="editForm.get('identification')?.touched && editForm.get('identification')?.invalid" class="text-danger small mt-1">
                                 <span *ngIf="editForm.get('identification')?.errors?.['required']">La cédula es obligatoria.</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">TELÉFONO</label>
                             <input type="text" class="form-control border-0 shadow-sm" formControlName="phone" (input)="formatearTelefono($event)">
                             <div *ngIf="editForm.get('phone')?.touched && editForm.get('phone')?.invalid" class="text-danger small mt-1">
@@ -132,7 +168,7 @@
                                 <span *ngIf="editForm.get('phone')?.errors?.['telefonoInvalido']">Formato inválido (Ej: +58 414-123-4567).</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">FECHA DE NACIMIENTO</label>
                             <input type="date" class="form-control border-0 shadow-sm" formControlName="date">
                             <div *ngIf="editForm.get('date')?.touched && editForm.get('date')?.invalid" class="text-danger small mt-1">
@@ -140,7 +176,7 @@
                                 <span *ngIf="editForm.get('date')?.errors?.['menorDeEdad']">Debe ser mayor de edad (18+).</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">CORREO ELECTRÓNICO</label>
                             <input type="email" class="form-control border-0 shadow-sm" formControlName="email">
                             <div *ngIf="editForm.get('email')?.touched && editForm.get('email')?.invalid" class="text-danger small mt-1">
@@ -148,7 +184,7 @@
                                 <span *ngIf="editForm.get('email')?.errors?.['email']">Ingrese una dirección de correo válida.</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">CIUDAD / ESTADO</label>
                             <select class="form-select border-0 shadow-sm" formControlName="cityId">
                                 <option *ngFor="let c of city" [value]="c.cityId">{{ c.cityName || c.state }}</option>
@@ -158,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">COMUNIDAD</label>
                             <select class="form-select border-0 shadow-sm" formControlName="comunityId" (change)="onComunityChange($event)">
                                 <option [value]="null">Seleccionar comunidad</option>
@@ -166,7 +202,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">CONSEJO COMUNAL</label>
                             <select class="form-select border-0 shadow-sm" formControlName="councilId" (change)="onCouncilChange($event)">
                                 <option [value]="null">Seleccionar consejo</option>
@@ -174,7 +210,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">COMITÉ</label>
                             <select class="form-select border-0 shadow-sm" formControlName="committeeId">
                                 <option [value]="null">Seleccionar comité</option>
@@ -182,11 +218,11 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label class="form-label fw-bold small text-muted">NUEVA CONTRASEÑA (OPCIONAL)</label>
                             <div class="input-group">
                                 <input [type]="ocultarPassword ? 'password' : 'text'" class="form-control border-0 shadow-sm" formControlName="password" placeholder="Vacío para no cambiar" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                                <button class="btn btn-white bg-white border-0 shadow-sm" type="button" (click)="togglePassword()" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                <button class="btn btn-white bg-white border-0 shadow-sm d-flex align-items-center" type="button" (click)="togglePassword()" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                                     <i class="fa-solid" [ngClass]="ocultarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                                 </button>
                             </div>
@@ -196,9 +232,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 p-4 pt-0 bg-light">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CANCELAR</button>
-                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold">
+                <div class="modal-footer border-0 p-3 p-md-4 pt-0 bg-light flex-column flex-sm-row gap-2 gap-sm-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold w-100 w-sm-auto order-2 order-sm-1" data-bs-dismiss="modal">CANCELAR</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold w-100 w-sm-auto order-1 order-sm-2">
                         ACTUALIZAR REGISTRO
                     </button>
                 </div>
@@ -207,57 +243,21 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-center mt-4 mb-5">
-  <nav aria-label="Navegación de voceros" *ngIf="totalPages > 1">
-    <ul class="pagination shadow-sm" style="border-radius: 5px; overflow: hidden;">
-      
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link border-end-0 bg-light text-primary px-3" 
-           (click)="setPage(currentPage - 1)" 
-           style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
-          Anterior
-        </a>
-      </li>
-
-      <li class="page-item" *ngFor="let p of pagesArray" [class.active]="p === currentPage">
-        <a class="page-link px-3 d-flex align-items-center justify-content-center" 
-           [class.bg-primary]="p === currentPage" 
-           [class.text-white]="p === currentPage"
-           [class.bg-white]="p !== currentPage"
-           [class.text-primary]="p !== currentPage"
-           (click)="setPage(p)" 
-           style="cursor: pointer; min-width: 38px; height: 38px; font-size: 0.9rem; border-color: #dee2e6;">
-          {{ p }}
-        </a>
-      </li>
-
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link border-start-0 bg-light text-primary px-3" 
-           (click)="setPage(currentPage + 1)" 
-           style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
-          Siguiente
-        </a>
-      </li>
-
-    </ul>
-  </nav>
-</div>
-
 <div class="modal fade" id="assignRolesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-white p-4">
-                <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-shield"></i>ASIGNAR ROLES</h5>
+            <div class="modal-header bg-danger text-white p-3 p-md-4">
+                <h5 class="modal-title fw-bold fs-6 fs-md-5"><i class="fa-solid fa-user-shield me-2 d-none d-sm-inline-block"></i>ASIGNAR ROLES</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
-                <div *ngIf="personSelect" class="mb-4 text-center">
-                    <p class="fw-bold">{{ personSelect.firstName }} {{ personSelect.lastName }}</p>
+            <div class="modal-body p-3 p-md-4">
+                <div *ngIf="personSelect" class="mb-3 mb-md-4 text-center">
+                    <p class="fw-bold fs-6">{{ personSelect.firstName }} {{ personSelect.lastName }}</p>
                 </div>
                 <div class="list-group list-group-flush">
-                    <div *ngFor="let role of roles" class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
+                    <div *ngFor="let role of roles" class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2 py-md-3">
                         <div>
-                            <span class="fw-bold d-block">{{ role.roleName }}</span>
+                            <span class="fw-bold d-block fs-6">{{ role.roleName }}</span>
                             <small class="text-muted">Permisos de nivel institucional</small>
                         </div>
                         <div class="form-check form-switch">
@@ -269,9 +269,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-0 p-4 pt-0">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">CERRAR</button>
-                <button type="button" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold" (click)="saveRoles()">
+            <div class="modal-footer border-0 p-3 p-md-4 pt-0 flex-column flex-sm-row gap-2 gap-sm-0">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold w-100 w-sm-auto order-2 order-sm-1" data-bs-dismiss="modal">CERRAR</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 shadow-sm fw-bold w-100 w-sm-auto order-1 order-sm-2" (click)="saveRoles()">
                     GUARDAR CAMBIOS
                 </button>
             </div>

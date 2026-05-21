@@ -1,16 +1,16 @@
 <div class="login-wrapper">
-  <div class="card login-card border-0 shadow-lg p-5">
+  <div class="card login-card border-0 shadow-lg p-3 p-sm-4 p-md-5">
     <div class="card-body text-center p-0">
       
-      <div class="header-icon bg-light-purple rounded-circle mx-auto mb-4">
-        <i class="fa-solid fa-lock-open fa-3x text-purple-accent"></i>
+      <div class="header-icon bg-light-purple rounded-circle mx-auto mb-3 mb-md-4">
+        <i class="fa-solid fa-lock-open fa-2x fa-md-3x text-purple-accent"></i>
       </div>
-      <h3 class="fw-bold text-dark mb-1">Sistema Flor-Montiel</h3>
-      <p class="text-muted small mb-5">Ingresa tus credenciales para continuar</p>
+      <h3 class="fw-bold text-dark mb-1 fs-4 fs-md-3">Sistema Flor-Montiel</h3>
+      <p class="text-muted small mb-4 mb-md-5">Ingresa tus credenciales para continuar</p>
 
       <form (submit)="onSubmit()" [formGroup]="loginForm">
         
-        <div class="mb-4 text-start">
+        <div class="mb-3 mb-md-4 text-start">
           <label class="form-label text-dark fw-bold small">Correo Electrónico</label>
           <div class="input-group input-group-lg custom-input-group">
             <span class="input-group-text bg-white border-0 text-muted">
@@ -24,7 +24,7 @@
           }
         </div>
 
-        <div class="mb-5 text-start">
+        <div class="mb-4 mb-md-5 text-start">
           <label class="form-label text-dark fw-bold small">Contraseña</label>
           <div class="input-group input-group-lg custom-input-group">
             <span class="input-group-text bg-white border-0 text-muted">
@@ -42,7 +42,7 @@
         </div>
 
         <div class="d-grid">
-          <button type="submit" class="btn btn-cosmo-purple btn-lg fw-bold px-5 py-3 shadow-sm"
+          <button type="submit" class="btn btn-cosmo-purple btn-lg fw-bold px-4 px-md-5 py-2 py-md-3 shadow-sm"
                   [disabled]="loginForm.invalid">
             <i class="fa-solid fa-right-to-bracket me-2"></i> Iniciar Sesión
           </button>

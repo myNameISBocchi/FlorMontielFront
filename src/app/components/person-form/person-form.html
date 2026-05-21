@@ -1,90 +1,90 @@
-<div class="container mt-5">
-  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+<div class="container-fluid mt-3 mt-md-4 mt-lg-5 px-3 px-md-4 px-lg-5">
+  <div class="card shadow-lg border-0 rounded-3 rounded-md-4 overflow-hidden">
     
-    <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center">
-      <i class="bi bi-chevron-left me-2" style="cursor: pointer;"></i>
-      <h4 class="mb-0 fw-bold text-secondary">Registrar Voceros</h4>
+    <div class="card-header bg-white border-0 py-2 py-md-3 px-3 px-md-4 d-flex align-items-center">
+      <i class="bi bi-chevron-left me-2 fs-5" style="cursor: pointer;"></i>
+      <h4 class="mb-0 fw-bold text-secondary fs-5 fs-md-4">Registrar Voceros</h4>
     </div>
 
-    <div class="card-body bg-light p-4">
+    <div class="card-body bg-light p-3 p-md-4 p-lg-4">
       <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
-        <div class="row g-4">
+        <div class="row g-3 g-md-4">
           
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Nombre:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="firstName" placeholder="Ej. Alfonso">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Nombre:</label>
+            <input type="text" class="form-control form-control-md shadow-sm" formControlName="firstName" placeholder="Ej. Alfonso">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Correo:</label>
-            <input type="email" class="form-control form-control-lg shadow-sm" formControlName="email" placeholder="ejemplo@correo.com">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Correo:</label>
+            <input type="email" class="form-control form-control-md shadow-sm" formControlName="email" placeholder="ejemplo@correo.com">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Apellido:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="lastName" placeholder="Ej. Espina">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Apellido:</label>
+            <input type="text" class="form-control form-control-md shadow-sm" formControlName="lastName" placeholder="Ej. Espina">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Contraseña:</label>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Contraseña:</label>
             <div class="input-group">
-              <input [type]="ocultarPassword ? 'password' : 'text'" class="form-control form-control-lg shadow-sm border-end-0" formControlName="password" placeholder="********">
-              <button class="btn btn-lg bg-white border shadow-sm border-start-0 text-muted" type="button" (click)="togglePassword()">
+              <input [type]="ocultarPassword ? 'password' : 'text'" class="form-control form-control-md shadow-sm border-end-0" formControlName="password" placeholder="********">
+              <button class="btn bg-white border shadow-sm border-start-0 text-muted d-flex align-items-center" type="button" (click)="togglePassword()">
                 <i class="bi" [ngClass]="ocultarPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
               </button>
             </div>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Cédula:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="identification" placeholder="V-31478490" (input)="formatearCedula($event)">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Cédula:</label>
+            <input type="text" class="form-control form-control-md shadow-sm" formControlName="identification" placeholder="V-31478490" (input)="formatearCedula($event)">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Teléfono:</label>
-            <input type="text" class="form-control form-control-lg shadow-sm" formControlName="phone" placeholder="0414-0000000" (input)="formatearTelefono($event)">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Teléfono:</label>
+            <input type="text" class="form-control form-control-md shadow-sm" formControlName="phone" placeholder="0414-0000000" (input)="formatearTelefono($event)">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Ciudad:</label>
-            <select class="form-select form-select-lg shadow-sm" formControlName="cityId">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Ciudad:</label>
+            <select class="form-select form-select-md shadow-sm" formControlName="cityId">
               <option value="">Seleccione la ciudad</option>
               <option *ngFor="let c of city" [value]="c.cityId">{{c.cityName}}</option>
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Fecha De Nacimiento:</label>
-            <input type="date" class="form-control form-control-lg shadow-sm" formControlName="date">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Fecha De Nacimiento:</label>
+            <input type="date" class="form-control form-control-md shadow-sm" formControlName="date">
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Comunidad:</label>
-            <select class="form-select form-select-lg shadow-sm" formControlName="comunityId">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Comunidad:</label>
+            <select class="form-select form-select-md shadow-sm" formControlName="comunityId">
               <option value="">Seleccione la comunidad</option>
               <option *ngFor="let c of comunity" [value]="c.comunityId">{{c.comunityName}}</option>
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Consejo Comunal:</label>
-            <select class="form-select form-select-lg shadow-sm" formControlName="councilId" [attr.disabled]="!personForm.get('comunityId')?.value ? true : null">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Consejo Comunal:</label>
+            <select class="form-select form-select-md shadow-sm" formControlName="councilId" [attr.disabled]="!personForm.get('comunityId')?.value ? true : null">
               <option value="">{{ !personForm.get('comunityId')?.value ? 'Esperando comunidad...' : 'Seleccione el consejo' }}</option>
               <option *ngFor="let c of council" [value]="c.councilId">{{c.councilName}}</option>
             </select>
           </div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-semibold text-muted">Comité:</label>
-            <select class="form-select form-select-lg shadow-sm" formControlName="committeeId">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-muted small">Comité:</label>
+            <select class="form-select form-select-md shadow-sm" formControlName="committeeId">
               <option value="">Seleccione el comité</option>
               <option *ngFor="let c of committee" [value]="c.committeeId">{{c.committeeName}}</option>
             </select>
           </div>
 
-          <div class="col-md-6" *ngIf="showSubcommittee">
-            <label class="form-label fw-semibold text-danger animate__animated animate__fadeIn">Subcomité:</label>
-            <select class="form-select form-select-lg shadow-sm border-danger" formControlName="subcommitteeId">
+          <div class="col-12 col-md-6" *ngIf="showSubcommittee">
+            <label class="form-label fw-semibold text-danger animate__animated animate__fadeIn small">Subcomité:</label>
+            <select class="form-select form-select-md shadow-sm border-danger" formControlName="subcommitteeId">
               <option value="">Seleccione el subcomité</option>
               <option *ngFor="let s of subcommittees" [value]="s.id">{{s.committeeName}}</option>
             </select>
@@ -92,9 +92,9 @@
 
         </div>
 
-        <div class="mt-5 text-center">
-          <button type="submit" class="btn btn-danger btn-lg px-5 py-2 rounded-3 shadow" [disabled]="personForm.invalid">
-            <i class="fa-solid fa-floppy-disk"></i> Guardar
+        <div class="mt-4 mt-md-5 text-center">
+          <button type="submit" class="btn btn-danger btn-md px-4 px-md-5 py-2 rounded-3 shadow w-100 w-sm-auto" [disabled]="personForm.invalid">
+            <i class="fa-solid fa-floppy-disk d-none d-sm-inline-block"></i> Guardar
           </button>
         </div>
       </form>

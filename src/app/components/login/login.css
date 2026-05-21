@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 15px;
 }
 
 .login-card {
@@ -23,7 +23,6 @@
   box-shadow: 0 1.5rem 3rem rgba(103, 58, 183, 0.1) !important; 
 }
 
-/* Estilo para los Input Groups Modernos */
 .custom-input-group {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
@@ -41,10 +40,9 @@
   background-color: #ffffff !important;
 }
 
-
 .header-icon {
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,7 +55,6 @@
 .text-purple-accent {
   color: #673ab7; 
 }
-
 
 .btn-cosmo-purple {
   background-color: #673ab7;
@@ -80,4 +77,112 @@
   background-color: #b0bec5; 
   border-color: #b0bec5;
   opacity: 0.7;
+}
+
+@media (max-width: 575.98px) {
+  .login-wrapper {
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .login-card {
+    border-radius: 16px;
+  }
+
+  .login-card:hover {
+    transform: none;
+    box-shadow: 0 0.5rem 1rem rgba(103, 58, 183, 0.08) !important;
+  }
+
+  .header-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .custom-input-group {
+    border-radius: 10px;
+  }
+
+  .btn-cosmo-purple {
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .login-wrapper {
+    padding: 20px;
+  }
+
+  .header-icon {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .login-wrapper {
+    padding: 30px;
+  }
+
+  .header-icon {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .login-card {
+    max-width: 480px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .login-wrapper {
+    padding: 40px;
+  }
+
+  .login-card {
+    max-width: 560px;
+    border-radius: 24px;
+  }
+
+  .header-icon {
+    width: 130px;
+    height: 130px;
+  }
+
+  .custom-input-group {
+    border-radius: 14px;
+  }
+
+  .btn-cosmo-purple {
+    border-radius: 14px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .login-wrapper {
+    padding: 60px;
+  }
+
+  .login-card {
+    max-width: 600px;
+    border-radius: 28px;
+  }
+
+  .header-icon {
+    width: 150px;
+    height: 150px;
+  }
+
+  .custom-input-group {
+    border-radius: 16px;
+  }
+
+  .btn-cosmo-purple {
+    border-radius: 16px;
+    font-size: 1.125rem;
+  }
 }

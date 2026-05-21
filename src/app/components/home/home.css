@@ -1,11 +1,9 @@
-/* Contenedor principal para separar sidebar de contenido */
 .main-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: #f8f9fa; /* Gris claro de fondo */
+  background-color: #f8f9fa;
 }
 
-/* Barra Lateral Estilo 1.png */
 .sidebar {
   width: 260px;
   background-color: white;
@@ -39,12 +37,10 @@
   font-size: 1.1rem;
 }
 
-/* Efecto hover/active del diseño */
 .nav-item:hover, .nav-item.active {
-  background-color: #e9ecef; /* El gris de selección en 1.png */
+  background-color: #e9ecef;
 }
 
-/* Footer de la sidebar (Cerrar Sesión) */
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid #eee;
@@ -60,7 +56,6 @@
   cursor: pointer;
 }
 
-/* Área de contenido y Topbar */
 .content-area {
   flex-grow: 1;
   display: flex;
@@ -71,12 +66,182 @@
   height: 60px;
   background-color: white;
   margin: 15px;
-  border-radius: 8px; /* Bordes redondeados del diseño */
+  border-radius: 8px;
 }
 
 .empty-state {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .custom-logo {
+    max-height: 100px;
+  }
+
+  .nav-item {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .nav-item i {
+    width: 22px;
+    margin-right: 12px;
+    font-size: 1rem;
+  }
+
+  .sidebar-footer {
+    padding: 15px;
+  }
+
+  .topbar {
+    height: 55px;
+    margin: 12px;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .main-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    height: 60vh;
+    padding: 10px 15px;
+    position: sticky;
+    top: 0;
+  }
+
+  .custom-logo {
+    max-height: 50px;
+    margin-right: auto;
+  }
+
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    order: 3;
+    margin-top: 10px;
+  }
+
+  .nav-menu.show {
+    display: flex;
+  }
+
+  .nav-item {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .nav-item i {
+    width: 20px;
+    margin-right: 10px;
+    font-size: 0.95rem;
+  }
+
+  .sidebar-footer {
+    display: none;
+    width: 100%;
+    order: 4;
+    padding: 12px 15px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .sidebar-footer.show {
+    display: block;
+  }
+
+  .btn-logout {
+    justify-content: center;
+  }
+
+  .content-area {
+    width: 100%;
+  }
+
+  .topbar {
+    height: 50px;
+    margin: 10px;
+    border-radius: 6px;
+  }
+
+  .empty-state {
+    height: 50vh;
+    padding: 20px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sidebar {
+    width: 280px;
+  }
+
+  .custom-logo {
+    max-height: 140px;
+  }
+
+  .nav-item {
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+
+  .nav-item i {
+    width: 28px;
+    margin-right: 18px;
+    font-size: 1.2rem;
+  }
+
+  .sidebar-footer {
+    padding: 24px;
+  }
+
+  .topbar {
+    height: 65px;
+    margin: 20px;
+    border-radius: 10px;
+  }
+
+  .empty-state {
+    height: 70vh;
+  }
+}
+
+@media (min-width: 1400px) {
+  .sidebar {
+    width: 300px;
+  }
+
+  .custom-logo {
+    max-height: 160px;
+  }
+
+  .nav-item {
+    padding: 16px 28px;
+    font-size: 1.05rem;
+  }
+
+  .nav-item i {
+    width: 30px;
+    margin-right: 20px;
+    font-size: 1.25rem;
+  }
+
+  .topbar {
+    height: 70px;
+    margin: 25px;
+    border-radius: 12px;
+  }
 }

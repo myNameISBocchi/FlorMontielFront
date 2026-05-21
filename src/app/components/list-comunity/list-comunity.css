@@ -5,14 +5,14 @@
 }
 
 .comunity-card {
-    width: 200px;
+    width: 100%;
     background: #fff;
     border-radius: 6px;
     border: 1px solid #ddd;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .img-wrapper {
@@ -97,7 +97,145 @@
 .action-btn:hover {
     background-color: #f9f9f9;
 }
+
 .row {
     margin-right: 0;
     margin-left: 0;
+}
+
+@media (max-width: 575.98px) {
+    .comunity-card {
+        border-radius: 4px;
+    }
+
+    .card-info {
+        padding: 6px 8px;
+    }
+
+    .card-info .title {
+        font-size: 9px;
+    }
+
+    .card-info .location {
+        font-size: 8px;
+    }
+
+    .card-info .location i {
+        font-size: 7px;
+    }
+
+    .action-btn {
+        padding: 6px 0;
+    }
+
+    .action-btn i {
+        font-size: 9px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .card-info {
+        padding: 8px;
+    }
+
+    .card-info .title {
+        font-size: 9.5px;
+    }
+
+    .card-info .location {
+        font-size: 8.5px;
+    }
+
+    .action-btn i {
+        font-size: 9.5px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .card-info {
+        padding: 12px;
+    }
+
+    .card-info .title {
+        font-size: 11px;
+    }
+
+    .card-info .location {
+        font-size: 10px;
+    }
+
+    .card-info .location i {
+        font-size: 9px;
+    }
+
+    .action-btn {
+        padding: 10px 0;
+    }
+
+    .action-btn i {
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .comunity-card {
+        border-radius: 8px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+
+    .card-info {
+        padding: 14px;
+    }
+
+    .card-info .title {
+        font-size: 12px;
+    }
+
+    .card-info .location {
+        font-size: 11px;
+        margin: 4px 0 0 0;
+    }
+
+    .card-info .location i {
+        font-size: 10px;
+    }
+
+    .action-btn {
+        padding: 12px 0;
+    }
+
+    .action-btn i {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .comunity-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-info {
+        padding: 16px;
+    }
+
+    .card-info .title {
+        font-size: 13px;
+    }
+
+    .card-info .location {
+        font-size: 12px;
+    }
+
+    .card-info .location i {
+        font-size: 11px;
+    }
+
+    .action-btn {
+        padding: 14px 0;
+    }
+
+    .action-btn i {
+        font-size: 13px;
+    }
 }
