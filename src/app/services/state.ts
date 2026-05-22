@@ -24,4 +24,8 @@ export class State {
   deleteState(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getStatesByCountry(countryId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/get-by-country/${countryId}`);
+  }
 }

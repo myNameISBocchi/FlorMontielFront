@@ -27,6 +27,8 @@ export class CityList implements OnInit {
   pageSize: number = 20;
   totalPages: number = 1;
   pagesArray: number[] = [];
+  searchTerm: string = '';
+  filterStateId: string = '';
 
   constructor(
     private cityService: City,
@@ -59,6 +61,24 @@ export class CityList implements OnInit {
       },
       error: () => Swal.fire('Error', 'No se pudieron cargar los estados', 'error')
     });
+  }
+
+  filterCities(): void {
+    this.filteredCities = this.cities.filter(city => {
+      const matchSearch = this.searchTerm === '' || city.cityName.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchState = this.filterStateId === '' || city.stateName === this.filterStateId;
+      return matchSearch && matchState;
+    });
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.filterStateId = '';
+    this.filteredCities = [...this.cities];
+    this.currentPage = 1;
+    this.updatePagination();
   }
 
   updatePagination() {
@@ -111,7 +131,7 @@ export class CityList implements OnInit {
             error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
         });
     }
-}
+  }
 
   openEditModal(city: any): void {
     this.currentCity = { ...city };

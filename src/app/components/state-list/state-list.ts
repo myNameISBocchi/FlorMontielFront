@@ -27,6 +27,9 @@ export class StateList implements OnInit {
   pageSize: number = 10;
   totalPages: number = 1;
   pagesArray: number[] = [];
+  searchTerm: string = '';
+  filterCountryName: string = '';
+  filterStatus: string = '';
 
   constructor(
     private stateService: State,
@@ -61,6 +64,28 @@ export class StateList implements OnInit {
     });
   }
 
+  filterStates(): void {
+    this.filteredStates = this.states.filter(state => {
+      const matchSearch = this.searchTerm === '' || state.stateName.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchCountry = this.filterCountryName === '' || state.countryName === this.filterCountryName;
+      const matchStatus = this.filterStatus === '' || 
+        (this.filterStatus === 'disponible' && !state.blocked) ||
+        (this.filterStatus === 'enuso' && state.blocked);
+      return matchSearch && matchCountry && matchStatus;
+    });
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.filterCountryName = '';
+    this.filterStatus = '';
+    this.filteredStates = [...this.states];
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredStates.length / this.pageSize);
     this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -75,7 +100,7 @@ export class StateList implements OnInit {
     this.updatePagination();
   }
 
- saveState(): void {
+  saveState(): void {
     const stateName = this.currentState.stateName?.trim().toUpperCase();
     const initials = this.currentState.initials?.trim().toUpperCase();
     
@@ -114,7 +139,7 @@ export class StateList implements OnInit {
             error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
         });
     }
-}
+  }
 
   openEditModal(state: any): void {
     this.currentState = { ...state };

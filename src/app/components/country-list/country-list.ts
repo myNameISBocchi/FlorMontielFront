@@ -25,6 +25,8 @@ export class CountryList implements OnInit {
   pageSize: number = 10;
   totalPages: number = 1;
   pagesArray: number[] = [];
+  searchTerm: string = '';
+  filterStatus: string = '';
 
   constructor(
     private countryService: Country,
@@ -45,6 +47,26 @@ export class CountryList implements OnInit {
       },
       error: () => Swal.fire('Error', 'No se pudieron cargar los países', 'error')
     });
+  }
+
+  filterCountries(): void {
+    this.filteredCountries = this.countries.filter(country => {
+      const matchSearch = this.searchTerm === '' || country.countryName.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchStatus = this.filterStatus === '' || 
+        (this.filterStatus === 'disponible' && !country.blocked) ||
+        (this.filterStatus === 'enuso' && country.blocked);
+      return matchSearch && matchStatus;
+    });
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.filterStatus = '';
+    this.filteredCountries = [...this.countries];
+    this.currentPage = 1;
+    this.updatePagination();
   }
 
   updatePagination() {
