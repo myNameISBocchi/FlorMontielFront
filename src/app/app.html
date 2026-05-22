@@ -1,233 +1,202 @@
 <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #f0f2f5;">
-    <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+    <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
         <span class="visually-hidden">Cargando...</span>
     </div>
 </div>
 
-<!-- OVERLAY para móvil -->
-<div *ngIf="isMobile && sidebarOpen" 
-     class="sidebar-overlay"
-     (click)="closeSidebar()">
-</div>
+<div *ngIf="isMobile && sidebarOpen" class="sidebar-overlay" (click)="closeSidebar()"></div>
 
-<div class="d-flex" style="min-height: 100vh; background-color: #f0f2f5;" *ngIf="!isLoading && userData && router.url !== '/login'">
-    
-    <!-- BOTÓN HAMBURGUESA - Solo visible en móvil -->
-    <button *ngIf="isMobile" 
-            class="hamburger-btn"
-            (click)="toggleSidebar(); $event.stopPropagation()">
+<div class="d-flex" [class.sidebar-open-active]="isMobile && sidebarOpen" style="min-height: 100vh; background-color: #f0f2f5;" *ngIf="!isLoading && userData && router.url !== '/login'">
+
+    <button *ngIf="isMobile" class="hamburger-btn" (click)="toggleSidebar(); $event.stopPropagation()">
         <i [class]="sidebarOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'"></i>
     </button>
-    
-    <!-- SIDEBAR -->
+
     <aside [class]="isMobile ? 'sidebar-mobile' : 'sidebar-desktop'"
            [class.sidebar-open]="sidebarOpen"
            [class.sidebar-closed]="!sidebarOpen">
-        
-        <!-- Botón cerrar en móvil -->
-        <button *ngIf="isMobile" 
-                class="sidebar-close-btn"
-                (click)="closeSidebar()">
+
+        <button *ngIf="isMobile" class="sidebar-close-btn" (click)="closeSidebar()">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
-        
-        <div class="p-4 text-center">
-            <img src="img/logo.png" alt="Logo" class="img-fluid" style="max-height: 100px;">
+
+        <div class="sidebar-header text-center">
+            <div class="logo-container">
+                <img src="img/logo.png" alt="Logo" class="img-fluid sidebar-logo">
+            </div>
+            <div class="sidebar-brand">
+                <span class="brand-text">COMUNA FLOR MONTIEL</span>
+                <span class="brand-subtitle">Sistema de Gestión</span>
+            </div>
         </div>
 
-        <nav class="flex-grow-1 mt-2">
+        <nav class="flex-grow-1 mt-2 sidebar-nav">
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item">
                     <a routerLink="/home" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                        <i class="fa-solid fa-house me-3"></i>Inicio
+                        <i class="fa-solid fa-house me-3 nav-icon"></i>
+                        <span class="nav-text">Inicio</span>
                     </a>
                 </li>
-                
-                @if(authService.hasPrivilege('comunities.index')){
-                    <li class="nav-item">
-                        <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-people-group me-2"></i>Gestionar Comunidad
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('peoples.index')){
-                    <li class="nav-item">
-                        <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-user-group me-3"></i>Gestionar Voceros
-                        </a>
-                    </li>
-                }
-
-                @if(authService.hasPrivilege('councils.index')){
-                    <li class="nav-item">
-                        <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-handshake-angle me-2"></i>Gestionar Consejos
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('committees.index')){
-                    <li class="nav-item">
-                        <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-users me-3"></i>Gestionar Comites
-                        </a>
-                    </li>
-                }
-
-                @if(authService.hasPrivilege('roles.index') || authService.hasPrivilege('privileges.index') || authService.hasPrivilege('countries.index')){
-                    <li class="nav-item mt-3">
-                        <div class="px-4 py-2">
-                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Administración</small>
-                        </div>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('roles.index')){
-                    <li class="nav-item">
-                        <a routerLink="/admin/roles" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-tags me-3"></i>Gestionar Roles
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('privileges.index')){
-                    <li class="nav-item">
-                        <a routerLink="/admin/privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-key me-3"></i>Gestionar Privilegios
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('role_privileges.index')){
-                    <li class="nav-item">
-                        <a routerLink="/admin/role-privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-link me-3"></i>Asignar Privilegios
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('countries.index')){
-                    <li class="nav-item">
-                        <a routerLink="/countries" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-globe me-3"></i>Gestionar Países
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('states.index')){
-                    <li class="nav-item">
-                        <a routerLink="/states" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-map me-3"></i>Gestionar Estados
-                        </a>
-                    </li>
-                }
-                
-                @if(authService.hasPrivilege('cities.index')){
-                    <li class="nav-item">
-                        <a routerLink="/cities" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
-                            <i class="fa-solid fa-city me-3"></i>Gestionar Ciudades
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a routerLink="/comunity" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-people-group me-2 nav-icon"></i>
+                        <span class="nav-text">Gestionar Comunidad</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/person" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-user-group me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Voceros</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/council" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-handshake-angle me-2 nav-icon"></i>
+                        <span class="nav-text">Gestionar Consejos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/committee" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-users me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Comites</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <div class="px-4 py-2">
+                        <small class="text-muted text-uppercase fw-bold section-title">Administración</small>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/admin/roles" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-tags me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Roles</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/admin/privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-key me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Privilegios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/admin/role-privileges" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-link me-3 nav-icon"></i>
+                        <span class="nav-text">Asignar Privilegios</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/countries" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-globe me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Países</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/states" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-map me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Estados</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/cities" routerLinkActive="active" class="nav-link text-dark rounded-0 border-bottom px-4 py-3" (click)="isMobile && closeSidebar()">
+                        <i class="fa-solid fa-city me-3 nav-icon"></i>
+                        <span class="nav-text">Gestionar Ciudades</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
-        <div class="p-4 border-top">
-            <button (click)="logout()" class="btn btn-link text-dark text-decoration-none p-0 w-100 text-start">
+        <div class="sidebar-footer p-4 border-top">
+            <button (click)="logout()" class="btn btn-link text-dark text-decoration-none p-0 w-100 text-start logout-btn">
                 <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Cerrar Sesión
             </button>
         </div>
     </aside>
 
-    <div class="flex-grow-1 d-flex flex-column">
+    <div class="flex-grow-1 d-flex flex-column main-content">
         <header class="bg-white m-3 p-3 shadow-sm rounded d-flex justify-content-between align-items-center" [style.margin-left]="isMobile ? '60px' : '0'">
-            <h5 class="mb-0 fw-bold text-danger">COMUNA SOCIALISTA FLOR MONTIEL</h5>
-            
-            <div class="position-relative">
-                <div class="d-flex align-items-center" (click)="showDropdown = !showDropdown; $event.stopPropagation()" style="cursor: pointer;">
-                    <div class="text-end me-3">
-                        <p class="mb-0 fw-bold small text-dark">{{ userData.firstName }} {{ userData.lastName }}</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">{{ userData.roles?.[0] }}</p>
+            <h5 class="mb-0 fw-bold text-danger header-title">COMUNA SOCIALISTA FLOR MONTIEL</h5>
+
+            <div class="position-relative profile-dropdown-container">
+                <div class="d-flex align-items-center profile-trigger" (click)="showDropdown = !showDropdown; $event.stopPropagation()">
+                    <div class="text-end me-3 profile-info d-none d-sm-block">
+                        <p class="mb-0 fw-bold small text-dark profile-name">{{ userData.firstName }} {{ userData.lastName }}</p>
+                        <p class="mb-0 text-muted profile-role">{{ userData.roles?.[0] }}</p>
                     </div>
-                    <img *ngIf="userData.photoPerson" 
-                         [src]="'http://localhost/app-back/public/' + userData.photoPerson" 
-                         class="rounded-circle shadow-sm border" 
-                         style="width: 45px; height: 45px; object-fit: cover;">
-                    <i *ngIf="!userData.photoPerson" class="fa-solid fa-circle-user fa-3x text-secondary"></i>
+                    <div class="avatar-wrapper">
+                        <img *ngIf="userData.photoPerson" [src]="'http://localhost/app-back/public/' + userData.photoPerson" class="rounded-circle shadow-sm border profile-avatar" alt="Profile">
+                        <i *ngIf="!userData.photoPerson" class="fa-solid fa-circle-user fa-2x text-secondary profile-avatar-default"></i>
+                    </div>
                 </div>
 
-                <div *ngIf="showDropdown" (click)="$event.stopPropagation()" class="position-absolute end-0 bg-white shadow-lg rounded-4 p-4 mt-3 border-0" style="z-index: 1050; width: 320px;">
-                    <div class="text-center mb-3">
-                        <div class="position-relative d-inline-block">
-                            <img *ngIf="userData.photoPerson" 
-                                 [src]="'http://localhost/app-back/public/' + userData.photoPerson" 
-                                 class="rounded-circle shadow-sm border" 
-                                 style="width: 80px; height: 80px; object-fit: cover;">
-                            <i *ngIf="!userData.photoPerson" class="fa-solid fa-circle-user fa-5x text-secondary"></i>
-                            
-                            <label class="position-absolute bottom-0 end-0 bg-danger rounded-circle p-1" style="cursor: pointer;">
-                                <i class="fa-solid fa-camera fa-xs text-white"></i>
+                <div *ngIf="showDropdown" (click)="$event.stopPropagation()" class="position-absolute end-0 bg-white shadow-lg rounded-4 p-4 mt-3 border-0 profile-dropdown">
+                    <div class="text-center mb-3 profile-header">
+                        <div class="position-relative d-inline-block avatar-edit-container">
+                            <img *ngIf="userData.photoPerson" [src]="'http://localhost/app-back/public/' + userData.photoPerson" class="rounded-circle shadow-sm border profile-avatar-large" alt="Profile Large">
+                            <i *ngIf="!userData.photoPerson" class="fa-solid fa-circle-user fa-5x text-secondary profile-avatar-large-default"></i>
+
+                            <label class="camera-btn" title="Cambiar foto">
+                                <i class="fa-solid fa-camera camera-icon"></i>
                                 <input type="file" hidden (change)="onPhotoSelected($event)" accept="image/*">
                             </label>
                         </div>
-                        <h6 class="fw-bold mb-1 mt-2 text-dark">{{ userData.firstName }} {{ userData.lastName }}</h6>
-                        <span class="badge bg-light text-danger px-3 py-2 rounded-pill small fw-bold">
+                        <h6 class="fw-bold mb-1 mt-2 text-dark profile-name-large">{{ userData.firstName }} {{ userData.lastName }}</h6>
+                        <span class="badge bg-light text-danger px-3 py-2 rounded-pill small fw-bold profile-badge">
                             {{ userData.roles?.[0] || 'SIN ROL' }}
                         </span>
                     </div>
 
                     <hr class="text-muted opacity-25">
 
-                    <div class="d-flex flex-column gap-2">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-building"></i>
+                    <div class="d-flex flex-column gap-2 profile-details">
+                        <div class="d-flex align-items-center gap-3 detail-item">
+                            <div class="detail-icon-wrapper">
+                                <i class="fa-solid fa-building detail-icon"></i>
                             </div>
-                            <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold">Comunidad</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.comunityName || 'N/A' }}</p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-handshake"></i>
-                            </div>
-                            <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold">Consejo</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.councilName || 'N/A' }}</p>
+                            <div class="detail-text">
+                                <p class="mb-0 text-muted small text-uppercase fw-bold detail-label">Comunidad</p>
+                                <p class="mb-0 fw-bold text-dark small detail-value">{{ userData.comunityName || 'N/A' }}</p>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-users"></i>
+                        <div class="d-flex align-items-center gap-3 detail-item">
+                            <div class="detail-icon-wrapper">
+                                <i class="fa-solid fa-handshake detail-icon"></i>
                             </div>
-                            <div>
-                                <p class="mb-0 text-muted small text-uppercase fw-bold">Comité</p>
-                                <p class="mb-0 fw-bold text-dark small">{{ userData.committeeName || 'N/A' }}</p>
+                            <div class="detail-text">
+                                <p class="mb-0 text-muted small text-uppercase fw-bold detail-label">Consejo</p>
+                                <p class="mb-0 fw-bold text-dark small detail-value">{{ userData.councilName || 'N/A' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 detail-item">
+                            <div class="detail-icon-wrapper">
+                                <i class="fa-solid fa-users detail-icon"></i>
+                            </div>
+                            <div class="detail-text">
+                                <p class="mb-0 text-muted small text-uppercase fw-bold detail-label">Comité</p>
+                                <p class="mb-0 fw-bold text-dark small detail-value">{{ userData.committeeName || 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
 
                     <hr class="text-muted opacity-25 mt-3">
 
-                    <button class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 mb-2" 
+                    <button class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 mb-2 profile-action-btn" 
                             data-bs-toggle="modal" 
                             data-bs-target="#editProfileModal"
                             (click)="openEditProfileModal()">
                         <i class="fa-solid fa-pen-to-square me-2"></i>Editar mis datos
                     </button>
 
-                    <button (click)="logout()" class="btn btn-outline-danger w-100 rounded-pill fw-bold py-2">
+                    <button (click)="logout()" class="btn btn-outline-danger w-100 rounded-pill fw-bold py-2 profile-logout-btn">
                         <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Salir del sistema
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="p-4 pt-0">
+        <main class="p-4 pt-0 content-area">
             <router-outlet></router-outlet>
         </main>
     </div>
@@ -238,20 +207,22 @@
 </div>
 
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title"><i class="fa-solid fa-user-edit me-2"></i>Editar mi perfil</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="mb-3">
-                    <label class="form-label fw-bold small">Nombres</label>
-                    <input type="text" class="form-control" [(ngModel)]="editProfile.firstName">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold small">Apellidos</label>
-                    <input type="text" class="form-control" [(ngModel)]="editProfile.lastName">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small">Nombres</label>
+                        <input type="text" class="form-control" [(ngModel)]="editProfile.firstName">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small">Apellidos</label>
+                        <input type="text" class="form-control" [(ngModel)]="editProfile.lastName">
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold small">Correo Electrónico</label>
