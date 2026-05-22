@@ -64,7 +64,7 @@
                             title="Editar Datos">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </button>
-                    @if(authService.getRole() === 'ADMINISTRADOR'){
+                    @if(authService.hasPrivilege('peoples.assign_roles')){
                         <button class="action-btn text-warning border-0 bg-transparent"
                             data-bs-toggle="modal"
                             data-bs-target="#assignRolesModal"
@@ -78,7 +78,7 @@
                         <i class="bi bi-card-image"></i>
                     </label>
                     <input type="file" [id]="'file-' + person.personId" hidden (change)="onFileSelected($event, person.personId)">
-                    @if(authService.getRole()==='ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+                    @if(authService.hasPrivilege('peoples.destroy')){
                         <button class="action-btn delete text-danger border-0 bg-transparent" 
                             (click)="deletePerson(person.personId)"
                             title="Eliminar Registro">

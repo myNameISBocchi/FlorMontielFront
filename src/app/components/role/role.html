@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  @if(authService.getRole() === 'ADMINISTRADOR'){
+  @if(authService.hasPrivilege('roles.store')){
     <div class="card shadow-sm border-0 mb-4 bg-white">
       <div class="card-body p-3">
         <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">Nuevo Registro</h6>

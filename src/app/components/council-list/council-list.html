@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+  @if(authService.hasPrivilege('councils.store')){
     
     <div class="card shadow-sm border-0 mb-3 mb-md-4 bg-white">
       <div class="card-body p-3">
@@ -48,7 +48,6 @@
     </div>
   }
 
-  
   <div class="d-none d-md-block" *ngIf="filteredCouncils && filteredCouncils.length > 0; else noData">
   <div class="card shadow-sm border-0 overflow-hidden">
     <div class="table-responsive">
@@ -57,7 +56,7 @@
           <tr>
             <th class="py-2 px-3 px-md-4 border-0 text-nowrap">Nombre</th>
             <th class="py-2 border-0 text-nowrap">Comunidad</th>
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('councils.update')){
               <th class="py-2 border-0 text-nowrap">Ubicación</th>
             }
             <th class="py-2 border-0 text-nowrap" style="min-width: 90px;">Acciones</th>
@@ -72,12 +71,12 @@
               <span *ngIf="!item.googleMaps" class="text-muted small">N/A</span>
             </td>
             <td class="text-nowrap">
-              @if(authService.getRole()=== 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              @if(authService.hasPrivilege('councils.update')){
                 <button class="btn btn-link text-primary btn-sm p-0 me-2" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
               }
-              @if(authService.getRole() ==='ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              @if(authService.hasPrivilege('councils.destroy')){
                 <button class="btn btn-link text-danger btn-sm p-0" (click)="deleteCouncil(item.councilId)">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -104,12 +103,12 @@
               <span *ngIf="!item.googleMaps" class="text-muted small">Sin ubicación</span>
             </div>
             <div class="d-flex justify-content-end gap-2 mt-2 pt-2 border-top">
-              @if(authService.getRole()==='ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              @if(authService.hasPrivilege('councils.update')){
                 <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(item)" data-bs-toggle="modal" data-bs-target="#editModal">
                   <i class="fa-solid fa-pen-to-square me-1"></i>Editar
                 </button>
               }
-              @if(authService.getRole() ==='ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+              @if(authService.hasPrivilege('councils.destroy')){
                 <button class="btn btn-outline-danger btn-sm" (click)="deleteCouncil(item.councilId)">
                   <i class="fa-solid fa-trash-can me-1"></i>Eliminar
                 </button>
@@ -145,7 +144,6 @@
     </nav>
   </div>
 
-  
   <ng-template #noData>
     <div class="text-center py-4 py-md-5 bg-white rounded shadow-sm border">
       <i class="fa-solid fa-folder-open fa-2x fa-md-3x text-light mb-2 mb-md-3"></i>
@@ -153,7 +151,6 @@
     </div>
   </ng-template>
 </div>
-
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">

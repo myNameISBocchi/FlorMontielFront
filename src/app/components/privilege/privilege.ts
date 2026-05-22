@@ -81,38 +81,46 @@ export class Privilege implements OnInit {
     const route = this.currentPrivilege.route?.trim().toLowerCase();
     
     if (!privilegeName || !route) {
-      Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
-      return;
+        Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
+        return;
     }
-
-    this.currentPrivilege.privilegeName = privilegeName;
-    this.currentPrivilege.route = route;
-    this.currentPrivilege.status = 1;
 
     if (this.isEditing && this.currentPrivilege.privilegeId) {
-      this.privilegeService.updatePrivilege(this.currentPrivilege.privilegeId, this.currentPrivilege).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Privilegio actualizado correctamente', 'success');
-          this.loadPrivileges();
-          this.closeModal();
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error?.msg || 'Error al actualizar', 'error');
-        }
-      });
+        const updateData = { 
+            privilegeName: privilegeName, 
+            route: route,
+            status: 1
+        };
+        
+        this.privilegeService.updatePrivilege(this.currentPrivilege.privilegeId, updateData).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Privilegio actualizado correctamente', 'success');
+                this.loadPrivileges();
+                this.closeModal();
+            },
+            error: (err) => {
+                console.error(err);
+                Swal.fire('Error', err.error?.msg || 'Error al actualizar', 'error');
+            }
+        });
     } else {
-      this.privilegeService.createPrivilege(this.currentPrivilege).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Privilegio creado correctamente', 'success');
-          this.loadPrivileges();
-          this.closeModal();
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error?.msg || 'Error al crear el privilegio', 'error');
-        }
-      });
+        this.privilegeService.createPrivilege({ 
+            privilegeName: privilegeName, 
+            route: route,
+            status: 1
+        }).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Privilegio creado correctamente', 'success');
+                this.loadPrivileges();
+                this.closeModal();
+            },
+            error: (err) => {
+                console.error(err);
+                Swal.fire('Error', err.error?.msg || 'Error al crear el privilegio', 'error');
+            }
+        });
     }
-  }
+}
 
   deletePrivilege(privilege: any): void {
     if (privilege.blocked) {

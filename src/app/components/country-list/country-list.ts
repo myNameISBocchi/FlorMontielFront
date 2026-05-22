@@ -71,15 +71,16 @@ export class CountryList implements OnInit {
     this.currentCountry.countryName = countryName;
 
     if (this.isEditing && this.currentCountry.countryId) {
-      this.countryService.updateCountry(this.currentCountry.countryId, this.currentCountry).subscribe({
+    const updateData = { countryName: this.currentCountry.countryName };
+    this.countryService.updateCountry(this.currentCountry.countryId, updateData).subscribe({
         next: () => {
-          Swal.fire('Éxito', 'País actualizado', 'success');
-          this.loadCountries();
-          this.closeModal();
+            Swal.fire('Éxito', 'País actualizado', 'success');
+            this.loadCountries();
+            this.closeModal();
         },
         error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
-      });
-    } else {
+    });
+} else {
       this.countryService.createCountry(this.currentCountry).subscribe({
         next: () => {
           Swal.fire('Éxito', 'País creado', 'success');

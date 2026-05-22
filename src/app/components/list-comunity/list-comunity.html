@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+  @if(authService.hasPrivilege('comunities.store')){
     <div class="card border-0 shadow-sm mb-4 mb-md-5">
       <div class="card-body p-3 p-md-4">
         <h5 class="fw-bold mb-3 mb-md-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
@@ -61,18 +61,18 @@
             </p>
           </div>
           <div class="card-actions">
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('comunities.update')){
               <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
             }
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('comunities.upload_photo')){
               <label [for]="'file-' + item.comunityId" class="action-btn view">
                 <i class="fa-solid fa-camera"></i>
               </label>
             }
             <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() ==='LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('comunities.destroy')){
               <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
                 <i class="fa-solid fa-trash-can"></i>
               </button>

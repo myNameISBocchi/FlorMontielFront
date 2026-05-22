@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+  @if(authService.hasPrivilege('committees.store')){
     <div class="mb-2">
       <span class="fw-bold small text-uppercase" style="letter-spacing: 1px;">Nuevo Registro</span>
     </div>
@@ -42,14 +42,13 @@
     </div> 
   }
   
-  
   <div class="table-responsive shadow-sm rounded border-0">
     <table class="table table-hover align-middle mb-0 bg-white">
       <thead class="bg-light">
         <tr>
           <th class="py-3 px-3 px-md-4 border-0 text-nowrap">Nombre</th>
           <th class="py-3 border-0 text-nowrap">Tipo</th>
-          @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+          @if(authService.hasPrivilege('committees.update') || authService.hasPrivilege('committees.destroy')){
             <th class="py-3 text-center border-0 text-nowrap" style="min-width: 90px;">Acciones</th>
           }
         </tr>
@@ -63,12 +62,12 @@
             </span>
           </td>
           <td class="text-center border-0 text-nowrap">
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('committees.update')){
               <button class="btn btn-link text-primary p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalUpdate" (click)="editCommittee(item)">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
             }
-            @if(authService.getRole() === 'ADMINISTRADOR' || authService.getRole() === 'LIDER DE COMUNA'){
+            @if(authService.hasPrivilege('committees.destroy')){
               <button class="btn btn-link text-danger p-0" (click)="deleteCommittee(item.committeeId)">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
@@ -79,7 +78,6 @@
     </table>
   </div>
 
-  
   <div class="d-flex justify-content-center mt-3 mt-md-4 mb-4 mb-md-5">
     <nav *ngIf="totalPages > 1" aria-label="Paginación de comités">
       <ul class="pagination shadow-sm flex-wrap justify-content-center" style="border-radius: 5px; overflow: hidden;">
@@ -104,7 +102,6 @@
     </nav>
   </div>
 </div>
-
 
 <div class="modal fade" id="modalUpdate" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">

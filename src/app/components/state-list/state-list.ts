@@ -75,39 +75,46 @@ export class StateList implements OnInit {
     this.updatePagination();
   }
 
-  saveState(): void {
+ saveState(): void {
     const stateName = this.currentState.stateName?.trim().toUpperCase();
     const initials = this.currentState.initials?.trim().toUpperCase();
     
     if (!stateName || !initials || !this.currentState.countryId) {
-      Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
-      return;
+        Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
+        return;
     }
-
-    this.currentState.stateName = stateName;
-    this.currentState.initials = initials;
 
     if (this.isEditing && this.currentState.stateId) {
-      this.stateService.updateState(this.currentState.stateId, this.currentState).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Estado actualizado', 'success');
-          this.loadStates();
-          this.closeModal();
-        },
-        error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
-      });
+        const updateData = { 
+            stateName: stateName, 
+            initials: initials, 
+            countryId: this.currentState.countryId 
+        };
+        
+        this.stateService.updateState(this.currentState.stateId, updateData).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Estado actualizado', 'success');
+                this.loadStates();
+                this.closeModal();
+            },
+            error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
+        });
     } else {
-      this.stateService.createState(this.currentState).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Estado creado', 'success');
-          this.loadStates();
-          this.currentState = { stateName: '', initials: '', countryId: '' };
-          this.cdr.detectChanges();
-        },
-        error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
-      });
+        this.stateService.createState({ 
+            stateName: stateName, 
+            initials: initials, 
+            countryId: this.currentState.countryId 
+        }).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Estado creado', 'success');
+                this.loadStates();
+                this.currentState = { stateName: '', initials: '', countryId: '' };
+                this.cdr.detectChanges();
+            },
+            error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
+        });
     }
-  }
+}
 
   openEditModal(state: any): void {
     this.currentState = { ...state };

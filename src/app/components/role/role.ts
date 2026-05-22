@@ -58,36 +58,36 @@ export class Role implements OnInit {
     const roleName = this.currentRole.roleName?.trim().toUpperCase();
     
     if (!roleName) {
-      Swal.fire('Error', 'El nombre del rol es obligatorio', 'error');
-      return;
+        Swal.fire('Error', 'El nombre del rol es obligatorio', 'error');
+        return;
     }
-
-    this.currentRole.roleName = roleName;
 
     if (this.isEditing && this.currentRole.roleId) {
-      this.roleService.updateRole(this.currentRole.roleId, this.currentRole).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Rol actualizado correctamente', 'success');
-          this.loadRoles();
-          this.closeModal();
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error?.msg || 'Error al actualizar', 'error');
-        }
-      });
+        const updateData = { roleName: roleName };
+        
+        this.roleService.updateRole(this.currentRole.roleId, updateData).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Rol actualizado correctamente', 'success');
+                this.loadRoles();
+                this.closeModal();
+            },
+            error: (err) => {
+                Swal.fire('Error', err.error?.msg || 'Error al actualizar', 'error');
+            }
+        });
     } else {
-      this.roleService.createRole(this.currentRole).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Rol creado correctamente', 'success');
-          this.loadRoles();
-          this.closeModal();
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error?.msg || 'Error al crear el rol', 'error');
-        }
-      });
+        this.roleService.createRole({ roleName: roleName }).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Rol creado correctamente', 'success');
+                this.loadRoles();
+                this.closeModal();
+            },
+            error: (err) => {
+                Swal.fire('Error', err.error?.msg || 'Error al crear el rol', 'error');
+            }
+        });
     }
-  }
+}
 
   deleteRole(role: any): void {
     if (role.blocked) {

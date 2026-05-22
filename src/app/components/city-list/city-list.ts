@@ -79,33 +79,39 @@ export class CityList implements OnInit {
     const cityName = this.currentCity.cityName?.trim().toUpperCase();
     
     if (!cityName || !this.currentCity.stateId) {
-      Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
-      return;
+        Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
+        return;
     }
-
-    this.currentCity.cityName = cityName;
 
     if (this.isEditing && this.currentCity.cityId) {
-      this.cityService.updateCity(this.currentCity.cityId, this.currentCity).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Ciudad actualizada', 'success');
-          this.loadCities();
-          this.closeModal();
-        },
-        error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
-      });
+        const updateData = { 
+            cityName: cityName, 
+            stateId: this.currentCity.stateId 
+        };
+        
+        this.cityService.updateCity(this.currentCity.cityId, updateData).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Ciudad actualizada', 'success');
+                this.loadCities();
+                this.closeModal();
+            },
+            error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
+        });
     } else {
-      this.cityService.createCity(this.currentCity).subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Ciudad creada', 'success');
-          this.loadCities();
-          this.currentCity = { cityName: '', stateId: '' };
-          this.cdr.detectChanges();
-        },
-        error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
-      });
+        this.cityService.createCity({ 
+            cityName: cityName, 
+            stateId: this.currentCity.stateId 
+        }).subscribe({
+            next: () => {
+                Swal.fire('Éxito', 'Ciudad creada', 'success');
+                this.loadCities();
+                this.currentCity = { cityName: '', stateId: '' };
+                this.cdr.detectChanges();
+            },
+            error: (err) => Swal.fire('Error', err.error?.msg || 'Error', 'error')
+        });
     }
-  }
+}
 
   openEditModal(city: any): void {
     this.currentCity = { ...city };
