@@ -22,6 +22,7 @@ export class CityList implements OnInit {
   isEditing = false;
   showModal = false;
   public authService = inject(Auth);
+
   pagedCities: any[] = [];
   currentPage: number = 1;
   pageSize: number = 20;

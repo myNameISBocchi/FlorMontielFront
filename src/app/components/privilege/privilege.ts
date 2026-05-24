@@ -25,6 +25,7 @@ export class Privilege implements OnInit {
   pageSize: number = 10;
   totalPages: number = 1;
   pagesArray: number[] = [];
+  searchTerm: string = '';
 
   constructor(private privilegeService: PrivilegeService, private cdr: ChangeDetectorRef) {}
 
@@ -44,6 +45,25 @@ export class Privilege implements OnInit {
         Swal.fire('Error', 'No se pudieron cargar los privilegios', 'error');
       }
     });
+  }
+
+  filterPrivileges(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredPrivileges = [...this.privileges];
+    } else {
+      const term = this.searchTerm.toLowerCase().trim();
+      this.filteredPrivileges = this.privileges.filter(privilege => 
+        privilege.privilegeName?.toLowerCase().includes(term) ||
+        privilege.route?.toLowerCase().includes(term)
+      );
+    }
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterPrivileges();
   }
 
   updatePagination() {
@@ -120,7 +140,7 @@ export class Privilege implements OnInit {
             }
         });
     }
-}
+  }
 
   deletePrivilege(privilege: any): void {
     if (privilege.blocked) {

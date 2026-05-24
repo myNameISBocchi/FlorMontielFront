@@ -15,10 +15,17 @@ import Swal from 'sweetalert2';
 })
 export class Role implements OnInit {
   roles: any[] = [];
+  filteredRoles: any[] = [];
   currentRole: any = { roleName: '' };
   isEditing: boolean = false;
   showModal: boolean = false;
   public authService = inject(Auth);
+  pagedRoles: any[] = [];
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
+  pagesArray: number[] = [];
+  searchTerm: string = '';
 
   constructor(private roleService: RoleService, private cdr: ChangeDetectorRef) {}
 
@@ -30,12 +37,46 @@ export class Role implements OnInit {
     this.roleService.getRoles().subscribe({
       next: (res: any) => {
         this.roles = res.results || res;
+        this.filteredRoles = [...this.roles];
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
       }
     });
+  }
+
+  filterRoles(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredRoles = [...this.roles];
+    } else {
+      const term = this.searchTerm.toLowerCase().trim();
+      this.filteredRoles = this.roles.filter(role => 
+        role.roleName?.toLowerCase().includes(term)
+      );
+    }
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterRoles();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredRoles.length / this.pageSize);
+    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.pagedRoles = this.filteredRoles.slice(startIndex, endIndex);
+  }
+
+  setPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
   }
 
   openModal(role?: any): void {
@@ -87,7 +128,7 @@ export class Role implements OnInit {
             }
         });
     }
-}
+  }
 
   deleteRole(role: any): void {
     if (role.blocked) {

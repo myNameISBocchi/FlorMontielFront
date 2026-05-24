@@ -26,6 +26,11 @@ export class PersonForm implements OnInit {
   showSubcommittee: boolean = false; 
   ocultarPassword: boolean = true;
 
+  goBack():void{
+    this.router.navigate(['/person']);
+
+  }
+
   ngOnInit(): void {
     this.cargarDatos();
     this.personForm = this.fb.group({
