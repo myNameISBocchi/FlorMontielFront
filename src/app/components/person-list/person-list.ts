@@ -42,6 +42,7 @@ export class PersonList implements OnInit {
   editForm!: FormGroup;
   filteredCouncils: any[] = [];
   filteredCommittees: any[] = [];
+  isLoading = true;
 
   ngOnInit(): void {
     this.loadPeoples();
@@ -76,28 +77,28 @@ export class PersonList implements OnInit {
   }
 
   onSearch() {
-    const term = this.searchTerm.trim().toLowerCase();
-    
-    if (!term) {
-      this.filteredPeoples = [...this.peoples];
-    } else {
-      this.filteredPeoples = this.peoples.filter(person => {
-        return person.firstName?.toLowerCase().includes(term) ||
-               person.lastName?.toLowerCase().includes(term) ||
-               person.identification?.toLowerCase().includes(term) ||
-               person.email?.toLowerCase().includes(term) ||
-               person.phone?.toLowerCase().includes(term) ||
-               person.comunityName?.toLowerCase().includes(term) ||
-               person.councilName?.toLowerCase().includes(term) ||
-               person.committeeName?.toLowerCase().includes(term) ||
-               person.roleName?.toLowerCase().includes(term);
-      });
-    }
-    
-    this.currentPage = 1;
-    this.updatePagination();
-    this.cdr.detectChanges();
+  const term = this.searchTerm.trim().toLowerCase();
+  
+  if (!term) {
+    this.filteredPeoples = [...this.peoples];
+  } else {
+    this.filteredPeoples = this.peoples.filter(person => {
+      return person.firstName?.toLowerCase().includes(term) ||
+             person.lastName?.toLowerCase().includes(term) ||
+             person.identification?.toLowerCase().includes(term) ||
+             person.email?.toLowerCase().includes(term) ||
+             person.phone?.toLowerCase().includes(term) ||
+             person.comunityName?.toLowerCase().includes(term) ||
+             person.councilName?.toLowerCase().includes(term) ||
+             person.committeeName?.toLowerCase().includes(term) ||
+             person.roleName?.toLowerCase().includes(term);
+    });
   }
+  
+  this.currentPage = 1;
+  this.updatePagination();
+  this.cdr.detectChanges();
+}
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredPeoples.length / this.pageSize);
@@ -122,6 +123,7 @@ export class PersonList implements OnInit {
   }
 
   loadPeoples() {
+    this.isLoading = true;
     this.personService.getPeoples().subscribe({
         next: (data: any) => {
             this.peoples = (data.results || []).map((person: any) => {
@@ -136,6 +138,7 @@ export class PersonList implements OnInit {
             });
             this.filteredPeoples = [...this.peoples];
             this.updatePagination();
+            this.isLoading = false;
             this.cdr.detectChanges();
         }
     });

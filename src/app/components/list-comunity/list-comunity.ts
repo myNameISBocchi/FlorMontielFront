@@ -26,41 +26,45 @@ export class ListComunity implements OnInit {
   currentPage: number = 1;
   perPage: number = 8;
   totalPages: number = 1;
+  isLoading = true;
 
   ngOnInit(): void {
     this.getComunity();
   }
 
   getComunity() {
+    this.isLoading = true;
     this.comunityService.getComunity().subscribe({
       next: (data: any) => {
         this.comunity = data.result;
         this.filteredComunity = [...this.comunity];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al traer datos:', err);
+        this.isLoading = false;
       }
     });
   }
 
-  onSearch() {
-    const term = this.searchTerm.trim().toLowerCase();
-    
-    if (!term) {
-      this.filteredComunity = [...this.comunity];
-    } else {
-      this.filteredComunity = this.comunity.filter(item => {
-        return item.comunityName?.toLowerCase().includes(term) ||
-               item.googleMaps?.toLowerCase().includes(term);
-      });
-    }
-    
-    this.currentPage = 1;
-    this.updatePagination();
-    this.cdr.detectChanges();
+ onSearch() {
+  const term = this.searchTerm.trim().toLowerCase();
+  
+  if (!term) {
+    this.filteredComunity = [...this.comunity];
+  } else {
+    this.filteredComunity = this.comunity.filter(item => {
+      return item.comunityName?.toLowerCase().includes(term) ||
+             item.googleMaps?.toLowerCase().includes(term);
+    });
   }
+  
+  this.currentPage = 1;
+  this.updatePagination();
+  this.cdr.detectChanges();
+}
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredComunity.length / this.perPage);

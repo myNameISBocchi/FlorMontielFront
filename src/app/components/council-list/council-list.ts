@@ -25,6 +25,7 @@ export class CouncilList implements OnInit {
   perPage: number = 10;
   totalPages: number = 1;
   public authService = inject(Auth);
+  isLoading = true;
 
   constructor(private council: Council, private cdr: ChangeDetectorRef) {}
 
@@ -34,37 +35,40 @@ export class CouncilList implements OnInit {
   }
 
   getCouncils() {
+    this.isLoading = true;
     this.council.findAll().subscribe({
       next: (res: any) => {
         this.councils = res.results || res.result || res;
         this.filteredCouncils = [...this.councils];
         this.currentPage = 1;
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudieron cargar los consejos', 'error');
+        this.isLoading = false;
       }
     });
   }
 
   onSearch() {
-    const term = this.searchTerm.trim().toLowerCase();
-    
-    if (!term) {
-      this.filteredCouncils = [...this.councils];
-    } else {
-      this.filteredCouncils = this.councils.filter(item => {
-        return item.councilName?.toLowerCase().includes(term) ||
-               item.comunityName?.toLowerCase().includes(term) ||
-               item.cityName?.toLowerCase().includes(term);
-      });
-    }
-    
-    this.currentPage = 1;
-    this.updatePagination();
-    this.cdr.detectChanges();
+  const term = this.searchTerm.trim().toLowerCase();
+  
+  if (!term) {
+    this.filteredCouncils = [...this.councils];
+  } else {
+    this.filteredCouncils = this.councils.filter(item => {
+      return item.councilName?.toLowerCase().includes(term) ||
+             item.comunityName?.toLowerCase().includes(term) ||
+             item.cityName?.toLowerCase().includes(term);
+    });
   }
+  
+  this.currentPage = 1;
+  this.updatePagination();
+  this.cdr.detectChanges();
+}
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredCouncils.length / this.perPage);

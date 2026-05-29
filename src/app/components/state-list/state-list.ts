@@ -30,6 +30,7 @@ export class StateList implements OnInit {
   searchTerm: string = '';
   filterCountryName: string = '';
   filterStatus: string = '';
+  isLoading = true;
 
   constructor(
     private stateService: State,
@@ -43,14 +44,19 @@ export class StateList implements OnInit {
   }
 
   loadStates(): void {
+    this.isLoading = true;
     this.stateService.getStates().subscribe({
       next: (res: any) => {
         this.states = res.results || res;
         this.filteredStates = [...this.states];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => Swal.fire('Error', 'No se pudieron cargar los estados', 'error')
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar los estados', 'error');
+        this.isLoading = false;
+      }
     });
   }
 
@@ -65,17 +71,17 @@ export class StateList implements OnInit {
   }
 
   filterStates(): void {
-    this.filteredStates = this.states.filter(state => {
-      const matchSearch = this.searchTerm === '' || state.stateName.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchCountry = this.filterCountryName === '' || state.countryName === this.filterCountryName;
-      const matchStatus = this.filterStatus === '' || 
-        (this.filterStatus === 'disponible' && !state.blocked) ||
-        (this.filterStatus === 'enuso' && state.blocked);
-      return matchSearch && matchCountry && matchStatus;
-    });
-    this.currentPage = 1;
-    this.updatePagination();
-  }
+  this.filteredStates = this.states.filter(state => {
+    const matchSearch = this.searchTerm === '' || state.stateName.toLowerCase().includes(this.searchTerm.toLowerCase());
+    const matchCountry = this.filterCountryName === '' || state.countryName === this.filterCountryName;
+    const matchStatus = this.filterStatus === '' || 
+      (this.filterStatus === 'disponible' && !state.blocked) ||
+      (this.filterStatus === 'enuso' && state.blocked);
+    return matchSearch && matchCountry && matchStatus;
+  });
+  this.currentPage = 1;
+  this.updatePagination();
+}
 
   clearFilters(): void {
     this.searchTerm = '';

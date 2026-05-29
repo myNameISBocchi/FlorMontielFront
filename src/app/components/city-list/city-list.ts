@@ -22,6 +22,7 @@ export class CityList implements OnInit {
   isEditing = false;
   showModal = false;
   public authService = inject(Auth);
+  isLoading = true;
 
   pagedCities: any[] = [];
   currentPage: number = 1;
@@ -43,14 +44,19 @@ export class CityList implements OnInit {
   }
 
   loadCities(): void {
+    this.isLoading = true;
     this.cityService.getCities().subscribe({
       next: (res: any) => {
         this.cities = res.results || res;
         this.filteredCities = [...this.cities];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => Swal.fire('Error', 'No se pudieron cargar las ciudades', 'error')
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar las ciudades', 'error');
+        this.isLoading = false;
+      }
     });
   }
 

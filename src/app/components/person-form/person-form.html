@@ -15,16 +15,28 @@
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Nombre:</label>
             <input type="text" class="form-control form-control-md shadow-sm" formControlName="firstName" placeholder="Ej. Alfonso">
+            <div *ngIf="personForm.get('firstName')?.touched && personForm.get('firstName')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('firstName')?.errors?.['required']">El nombre es obligatorio.</span>
+              <span *ngIf="personForm.get('firstName')?.errors?.['pattern']">Solo se admiten letras.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Correo:</label>
             <input type="email" class="form-control form-control-md shadow-sm" formControlName="email" placeholder="ejemplo@correo.com">
+            <div *ngIf="personForm.get('email')?.touched && personForm.get('email')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('email')?.errors?.['required']">El correo es obligatorio.</span>
+              <span *ngIf="personForm.get('email')?.errors?.['email']">Ingrese un correo válido.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Apellido:</label>
             <input type="text" class="form-control form-control-md shadow-sm" formControlName="lastName" placeholder="Ej. Espina">
+            <div *ngIf="personForm.get('lastName')?.touched && personForm.get('lastName')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('lastName')?.errors?.['required']">El apellido es obligatorio.</span>
+              <span *ngIf="personForm.get('lastName')?.errors?.['pattern']">Solo se admiten letras.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
@@ -35,16 +47,33 @@
                 <i class="bi" [ngClass]="ocultarPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
               </button>
             </div>
+            <div *ngIf="personForm.get('password')?.touched && personForm.get('password')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
+              <span *ngIf="personForm.get('password')?.errors?.['minlength']">La contraseña debe tener mínimo 8 caracteres.</span>
+            </div>
+            <div class="text-muted small mt-1" *ngIf="personForm.get('password')?.touched && personForm.get('password')?.valid">
+              <i class="fa-solid fa-check-circle text-success"></i> Contraseña válida
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Cédula:</label>
             <input type="text" class="form-control form-control-md shadow-sm" formControlName="identification" placeholder="V-31478490" (input)="formatearCedula($event)">
+            <div *ngIf="personForm.get('identification')?.touched && personForm.get('identification')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('identification')?.errors?.['required']">La cédula es obligatoria.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Teléfono:</label>
             <input type="text" class="form-control form-control-md shadow-sm" formControlName="phone" placeholder="0414-0000000" (input)="formatearTelefono($event)">
+            <div class="text-muted small mt-1">
+              <i class="fa-solid fa-info-circle"></i> Formato: +58 412-123-4567
+            </div>
+            <div *ngIf="personForm.get('phone')?.touched && personForm.get('phone')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('phone')?.errors?.['required']">El teléfono es obligatorio.</span>
+              <span *ngIf="personForm.get('phone')?.errors?.['telefonoInvalido']">Formato inválido (Ej: +58 414-123-4567).</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
@@ -53,11 +82,19 @@
               <option value="">Seleccione la ciudad</option>
               <option *ngFor="let c of city" [value]="c.cityId">{{c.cityName}}</option>
             </select>
+            <div *ngIf="personForm.get('cityId')?.touched && personForm.get('cityId')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('cityId')?.errors?.['required']">Debe seleccionar una ciudad.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
             <label class="form-label fw-semibold text-muted small">Fecha De Nacimiento:</label>
             <input type="date" class="form-control form-control-md shadow-sm" formControlName="date">
+            <div *ngIf="personForm.get('date')?.touched && personForm.get('date')?.invalid" class="text-danger small mt-1">
+              <span *ngIf="personForm.get('date')?.errors?.['required']">La fecha de nacimiento es obligatoria.</span>
+              <span *ngIf="personForm.get('date')?.errors?.['menorDeEdad']">Debe ser mayor de edad (18+).</span>
+              <span *ngIf="personForm.get('date')?.errors?.['edadExcesiva']">Edad máxima permitida es 105 años.</span>
+            </div>
           </div>
 
           <div class="col-12 col-md-6">

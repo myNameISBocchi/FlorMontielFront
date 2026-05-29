@@ -26,6 +26,7 @@ export class Role implements OnInit {
   totalPages: number = 1;
   pagesArray: number[] = [];
   searchTerm: string = '';
+  isLoading = true;
 
   constructor(private roleService: RoleService, private cdr: ChangeDetectorRef) {}
 
@@ -34,31 +35,34 @@ export class Role implements OnInit {
   }
 
   loadRoles(): void {
+    this.isLoading = true;
     this.roleService.getRoles().subscribe({
       next: (res: any) => {
         this.roles = res.results || res;
         this.filteredRoles = [...this.roles];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        this.isLoading = false;
       }
     });
   }
 
   filterRoles(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredRoles = [...this.roles];
-    } else {
-      const term = this.searchTerm.toLowerCase().trim();
-      this.filteredRoles = this.roles.filter(role => 
-        role.roleName?.toLowerCase().includes(term)
-      );
-    }
-    this.currentPage = 1;
-    this.updatePagination();
+  if (!this.searchTerm.trim()) {
+    this.filteredRoles = [...this.roles];
+  } else {
+    const term = this.searchTerm.toLowerCase().trim();
+    this.filteredRoles = this.roles.filter(role => 
+      role.roleName?.toLowerCase().includes(term)
+    );
   }
+  this.currentPage = 1;
+  this.updatePagination();
+}
 
   clearSearch(): void {
     this.searchTerm = '';

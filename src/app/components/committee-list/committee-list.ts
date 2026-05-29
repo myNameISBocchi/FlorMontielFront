@@ -25,6 +25,7 @@ export class CommitteeList implements OnInit {
   currentPage: number = 1;
   perPage: number = 6;
   totalPages: number = 1;
+  isLoading = true;
 
   committeeForm = {
     committeeId: '',
@@ -37,36 +38,38 @@ export class CommitteeList implements OnInit {
   }
 
   list() {
+    this.isLoading = true;
     this.committeeService.getCommittee().subscribe({
       next: (res) => {
         this.committees = res.result;
         this.filteredCommittees = [...this.committees];
         this.updatePagination();
         this.currentPage = 1;
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'Error al cargar comités', 'error');
+        this.isLoading = false;
       }
     });
   }
 
   onSearch() {
-    const term = this.searchTerm.trim().toLowerCase();
-    
-    if (!term) {
-      this.filteredCommittees = [...this.committees];
-    } else {
-      this.filteredCommittees = this.committees.filter(item => {
-        return item.committeeName?.toLowerCase().includes(term);
-      });
-    }
-    
-    this.currentPage = 1;
-    this.updatePagination();
-    this.cdr.detectChanges();
+  const term = this.searchTerm.trim().toLowerCase();
+  
+  if (!term) {
+    this.filteredCommittees = [...this.committees];
+  } else {
+    this.filteredCommittees = this.committees.filter(item => {
+      return item.committeeName?.toLowerCase().includes(term);
+    });
   }
-
+  
+  this.currentPage = 1;
+  this.updatePagination();
+  this.cdr.detectChanges();
+}
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredCommittees.length / this.perPage);
     const startIndex = (this.currentPage - 1) * this.perPage;

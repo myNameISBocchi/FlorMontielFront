@@ -27,6 +27,7 @@ export class CountryList implements OnInit {
   pagesArray: number[] = [];
   searchTerm: string = '';
   filterStatus: string = '';
+  isLoading = true;
 
   constructor(
     private countryService: Country,
@@ -38,28 +39,33 @@ export class CountryList implements OnInit {
   }
 
   loadCountries(): void {
+    this.isLoading = true;
     this.countryService.getCountries().subscribe({
       next: (res: any) => {
         this.countries = res.results || res;
         this.filteredCountries = [...this.countries];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => Swal.fire('Error', 'No se pudieron cargar los países', 'error')
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar los países', 'error');
+        this.isLoading = false;
+      }
     });
   }
 
   filterCountries(): void {
-    this.filteredCountries = this.countries.filter(country => {
-      const matchSearch = this.searchTerm === '' || country.countryName.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchStatus = this.filterStatus === '' || 
-        (this.filterStatus === 'disponible' && !country.blocked) ||
-        (this.filterStatus === 'enuso' && country.blocked);
-      return matchSearch && matchStatus;
-    });
-    this.currentPage = 1;
-    this.updatePagination();
-  }
+  this.filteredCountries = this.countries.filter(country => {
+    const matchSearch = this.searchTerm === '' || country.countryName.toLowerCase().includes(this.searchTerm.toLowerCase());
+    const matchStatus = this.filterStatus === '' || 
+      (this.filterStatus === 'disponible' && !country.blocked) ||
+      (this.filterStatus === 'enuso' && country.blocked);
+    return matchSearch && matchStatus;
+  });
+  this.currentPage = 1;
+  this.updatePagination();
+}
 
   clearFilters(): void {
     this.searchTerm = '';

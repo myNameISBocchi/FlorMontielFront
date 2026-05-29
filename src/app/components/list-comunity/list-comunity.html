@@ -1,109 +1,121 @@
 <div class="container-fluid py-3 py-md-4 py-lg-5 px-3 px-md-4 px-lg-5">
-  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4 mb-lg-5 p-3 bg-white shadow-sm rounded gap-3">
-    <div class="d-flex align-items-center">
-      <h4 class="mb-0 fs-5 fs-md-4">Gestionar Comunidades</h4>
-    </div>
-    <div class="w-100 w-sm-auto" style="max-width: 300px;">
-      <div class="input-group input-group-sm">
-        <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
-          <i class="fas fa-search text-muted"></i>
-        </span>
-        <input type="text" class="form-control border-start-0 ps-0 rounded-end-pill" placeholder="Buscar..." style="box-shadow: none;" [(ngModel)]="searchTerm" (input)="onSearch()">
+  
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+    <div class="text-center">
+      <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
       </div>
+      <p class="mt-2 text-muted">Cargando comunidades...</p>
     </div>
   </div>
 
-  @if(authService.hasPrivilege('comunities.store')){
-    <div class="card border-0 shadow-sm mb-4 mb-md-5">
-      <div class="card-body p-3 p-md-4">
-        <h5 class="fw-bold mb-3 mb-md-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
-        <form (submit)="createComunity($event)" class="row g-2 g-md-3 align-items-stretch">
-          <div class="col-12 col-md-5">
-            <div class="form-floating">
-              <input type="text" class="form-control border-0 bg-light" id="comName" name="comunityName" placeholder="Nombre" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$">
-              <label for="comName">Nombre de la Comunidad</label>
-            </div>
-          </div>
-          <div class="col-12 col-md-5">
-            <div class="form-floating">
-              <input type="text" class="form-control border-0 bg-light" id="comMaps" name="googleMaps" placeholder="Ubicación" pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:]+$">
-              <label for="comMaps">Coordenadas / Ubicación</label>
-            </div>
-          </div>
-          <div class="col-12 col-sm-6 col-md-2 d-grid">
-            <button type="submit" class="btn btn-danger py-2 py-md-3 shadow-sm fw-bold">
-              <i class="fa-solid fa-floppy-disk d-none d-sm-inline-block"></i> Guardar
-            </button>
-          </div>
-        </form>
+  <div *ngIf="!isLoading">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4 mb-lg-5 p-3 bg-white shadow-sm rounded gap-3">
+      <div class="d-flex align-items-center">
+        <h4 class="mb-0 fs-5 fs-md-4">Gestionar Comunidades</h4>
+      </div>
+      <div class="w-100 w-sm-auto" style="max-width: 300px;">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input type="text" class="form-control border-start-0 ps-0 rounded-end-pill" placeholder="Buscar..." style="box-shadow: none;" [(ngModel)]="searchTerm" (input)="onSearch()">
+        </div>
       </div>
     </div>
-  }
 
-  <div class="row g-3 g-md-4 g-lg-4">
-    @for(item of pagedComunity; track item.comunityId) {
-      <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex mb-3 mb-md-4">
-        <div class="comunity-card w-100">
-          <div class="img-wrapper">
-            <img [src]="item.photoComunity? 'http://localhost/app-back/public/' + item.photoComunity: '/img/comunityDefault.png'" alt="comunidad">
-          </div>
-          <div class="card-info">
-            <h5 class="title">{{item.comunityName}}</h5>
-            <p class="location">
-              <i class="fa-solid fa-location-dot"></i> 
-              @if(item.googleMaps && item.googleMaps.trim() !== '') {
-                <a [href]="item.googleMaps.startsWith('http') ? item.googleMaps : 'https://www.google.com/maps/search/?api=1&query=' + item.googleMaps" target="_blank" class="btn btn-link p-0 text-decoration-none fw-bold text-danger btn-sm align-baseline ms-1">
-                  Ver mapa
-                </a>
-              } @else {
-                <span class="text-muted ms-1 fw-bold">N/A</span>
-              }
-            </p>
-          </div>
-          <div class="card-actions">
-            @if(authService.hasPrivilege('comunities.update')){
-              <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
-                <i class="fa-solid fa-pen-to-square"></i>
+    @if(authService.hasPrivilege('comunities.store')){
+      <div class="card border-0 shadow-sm mb-4 mb-md-5">
+        <div class="card-body p-3 p-md-4">
+          <h5 class="fw-bold mb-3 mb-md-4 text-dark text-uppercase small ls-2">Nuevo Registro</h5>
+          <form (submit)="createComunity($event)" class="row g-2 g-md-3 align-items-stretch">
+            <div class="col-12 col-md-5">
+              <div class="form-floating">
+                <input type="text" class="form-control border-0 bg-light" id="comName" name="comunityName" placeholder="Nombre" required pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+(\s[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+)*$">
+                <label for="comName">Nombre de la Comunidad</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-5">
+              <div class="form-floating">
+                <input type="text" class="form-control border-0 bg-light" id="comMaps" name="googleMaps" placeholder="Ubicación" pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ.,\-\/\s:]+$">
+                <label for="comMaps">Coordenadas / Ubicación</label>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-2 d-grid">
+              <button type="submit" class="btn btn-danger py-2 py-md-3 shadow-sm fw-bold">
+                <i class="fa-solid fa-floppy-disk d-none d-sm-inline-block"></i> Guardar
               </button>
-            }
-            @if(authService.hasPrivilege('comunities.upload_photo')){
-              <label [for]="'file-' + item.comunityId" class="action-btn view">
-                <i class="fa-solid fa-camera"></i>
-              </label>
-            }
-            <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
-            @if(authService.hasPrivilege('comunities.destroy')){
-              <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            }
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     }
-  </div>
 
-  <nav class="mt-3 mt-md-4 mb-4 mb-md-5" *ngIf="totalPages > 1" aria-label="Paginación de comunidades">
-    <ul class="pagination justify-content-center flex-wrap shadow-sm" style="border-radius: 5px; overflow: hidden;">
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link text-primary px-2 px-md-3 py-2" (click)="goToPage(currentPage - 1)" style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
-          <span class="d-none d-sm-inline">Anterior</span>
-          <span class="d-inline d-sm-none">&laquo;</span>
-        </a>
-      </li>
-      <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index">
-        <a class="page-link px-2 px-md-3 d-flex align-items-center justify-content-center" [class.bg-primary]="currentPage === (i + 1)" [class.text-white]="currentPage === (i + 1)" [class.text-primary]="currentPage !== (i + 1)" (click)="goToPage(i + 1)" style="cursor: pointer; min-width: 32px; height: 32px; font-size: 0.9rem; border-color: #dee2e6;">
-          {{ i + 1 }}
-        </a>
-      </li>
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link text-primary px-2 px-md-3 py-2" (click)="goToPage(currentPage + 1)" style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
-          <span class="d-none d-sm-inline">Siguiente</span>
-          <span class="d-inline d-sm-none">&raquo;</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+    <div class="row g-3 g-md-4 g-lg-4">
+      @for(item of pagedComunity; track item.comunityId) {
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex mb-3 mb-md-4">
+          <div class="comunity-card w-100">
+            <div class="img-wrapper">
+              <img [src]="item.photoComunity? 'http://localhost/app-back/public/' + item.photoComunity: '/img/comunityDefault.png'" alt="comunidad">
+            </div>
+            <div class="card-info">
+              <h5 class="title">{{item.comunityName}}</h5>
+              <p class="location">
+                <i class="fa-solid fa-location-dot"></i> 
+                @if(item.googleMaps && item.googleMaps.trim() !== '') {
+                  <a [href]="item.googleMaps.startsWith('http') ? item.googleMaps : 'https://www.google.com/maps/search/?api=1&query=' + item.googleMaps" target="_blank" class="btn btn-link p-0 text-decoration-none fw-bold text-danger btn-sm align-baseline ms-1">
+                    Ver mapa
+                  </a>
+                } @else {
+                  <span class="text-muted ms-1 fw-bold">N/A</span>
+                }
+              </p>
+            </div>
+            <div class="card-actions">
+              @if(authService.hasPrivilege('comunities.update')){
+                <button class="action-btn edit" data-bs-toggle="modal" data-bs-target="#editModal" (click)="openModalButton(item)">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+              }
+              @if(authService.hasPrivilege('comunities.upload_photo')){
+                <label [for]="'file-' + item.comunityId" class="action-btn view">
+                  <i class="fa-solid fa-camera"></i>
+                </label>
+              }
+              <input type="file" [id]="'file-' + item.comunityId" hidden (change)="onFileSelected($event, item.comunityId)">
+              @if(authService.hasPrivilege('comunities.destroy')){
+                <button class="action-btn delete" (click)="deleteComunity(item.comunityId)">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <nav class="mt-3 mt-md-4 mb-4 mb-md-5" *ngIf="totalPages > 1" aria-label="Paginación de comunidades">
+      <ul class="pagination justify-content-center flex-wrap shadow-sm" style="border-radius: 5px; overflow: hidden;">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link text-primary px-2 px-md-3 py-2" (click)="goToPage(currentPage - 1)" style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
+            <span class="d-none d-sm-inline">Anterior</span>
+            <span class="d-inline d-sm-none">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index">
+          <a class="page-link px-2 px-md-3 d-flex align-items-center justify-content-center" [class.bg-primary]="currentPage === (i + 1)" [class.text-white]="currentPage === (i + 1)" [class.text-primary]="currentPage !== (i + 1)" (click)="goToPage(i + 1)" style="cursor: pointer; min-width: 32px; height: 32px; font-size: 0.9rem; border-color: #dee2e6;">
+            {{ i + 1 }}
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link text-primary px-2 px-md-3 py-2" (click)="goToPage(currentPage + 1)" style="cursor: pointer; font-size: 0.9rem; border-color: #dee2e6;">
+            <span class="d-none d-sm-inline">Siguiente</span>
+            <span class="d-inline d-sm-none">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">

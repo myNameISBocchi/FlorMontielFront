@@ -28,7 +28,6 @@ export class PersonForm implements OnInit {
 
   goBack():void{
     this.router.navigate(['/person']);
-
   }
 
   ngOnInit(): void {
@@ -39,7 +38,7 @@ export class PersonForm implements OnInit {
       identification: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['+58 ', [Validators.required, this.validarTelefonoVenezuela]],
-      date: ['', [Validators.required, this.validarMayorDeEdad]],
+      date: ['', [Validators.required, this.validarEdad]],
       cityId: ['', [Validators.required]],
       comunityId: [''],
       councilId: [''],
@@ -67,6 +66,31 @@ export class PersonForm implements OnInit {
         this.personForm.patchValue({ subcommitteeId: '' });
       }
     });
+  }
+
+  validarEdad(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+    if (!valor) return { required: true };
+
+    const fechaNacimiento = new Date(valor);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+    const dia = hoy.getDate() - fechaNacimiento.getDate();
+
+    if (mes < 0 || (mes === 0 && dia < 0)) {
+      edad--;
+    }
+    
+    if (edad < 18) {
+      return { menorDeEdad: true };
+    }
+    
+    if (edad > 105) {
+      return { edadExcesiva: true };
+    }
+    
+    return null;
   }
 
   togglePassword(): void {
@@ -140,10 +164,25 @@ export class PersonForm implements OnInit {
       });
     } else {
       this.personForm.markAllAsTouched();
+      
+      let mensajeError = 'Por favor, completa todos los campos correctamente:\n';
+      
+      if (this.personForm.get('firstName')?.invalid) mensajeError += '- Nombre: Solo letras\n';
+      if (this.personForm.get('lastName')?.invalid) mensajeError += '- Apellido: Solo letras\n';
+      if (this.personForm.get('identification')?.invalid) mensajeError += '- Cédula: Campo obligatorio\n';
+      if (this.personForm.get('email')?.invalid) mensajeError += '- Correo: Debe ser un email válido\n';
+      if (this.personForm.get('phone')?.invalid) mensajeError += '- Teléfono: Formato +58 412-123-4567\n';
+      if (this.personForm.get('date')?.hasError('required')) mensajeError += '- Fecha de nacimiento: Obligatoria\n';
+      if (this.personForm.get('date')?.hasError('menorDeEdad')) mensajeError += '- Fecha de nacimiento: Debes ser mayor de 18 años\n';
+      if (this.personForm.get('date')?.hasError('edadExcesiva')) mensajeError += '- Fecha de nacimiento: Edad máxima permitida es 105 años\n';
+      if (this.personForm.get('cityId')?.invalid) mensajeError += '- Ciudad: Selecciona una ciudad\n';
+      if (this.personForm.get('password')?.hasError('required')) mensajeError += '- Contraseña: Obligatoria\n';
+      if (this.personForm.get('password')?.hasError('minlength')) mensajeError += '- Contraseña: Mínimo 8 caracteres\n';
+      
       Swal.fire({
         icon: 'warning',
-        title: 'Campos incompletos',
-        text: 'Por favor, completa todos los campos obligatorios'
+        title: 'Campos incorrectos',
+        text: mensajeError
       });
     }
   }
@@ -153,21 +192,6 @@ export class PersonForm implements OnInit {
     if (!valor || valor === '+58 ') return { required: true };
     const regexTel = /^\+58 (412|414|416|424|426)-\d{3}-\d{4}$/;
     return regexTel.test(valor) ? null : { telefonoInvalido: true };
-  }
-
-  validarMayorDeEdad(control: AbstractControl): ValidationErrors | null {
-    const valor = control.value;
-    if (!valor) return null;
-
-    const fechaNacimiento = new Date(valor);
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-    const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-      edad--;
-    }
-    return edad >= 18 ? null : { menorDeEdad: true };
   }
 
   formatearCedula(event: Event): void {

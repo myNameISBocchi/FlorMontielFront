@@ -1,120 +1,132 @@
 <div class="container-fluid py-3 py-md-4 px-3 px-lg-5">
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded gap-3 gap-md-0">
-    <h4 class="mb-0">Asignar Privilegios a Roles</h4>
+  
+  <div *ngIf="isLoadingRoles || isLoadingPrivileges" class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+    <div class="text-center">
+      <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2 text-muted">Cargando datos...</p>
+    </div>
   </div>
 
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-3">
-      <div class="row g-2 align-items-center">
-        <div class="col-12 col-md-4">
-          <label class="form-label mb-1 small text-muted">Seleccione un Rol</label>
-          <select class="form-select form-select-sm bg-light border-0" [(ngModel)]="selectedRoleId" (change)="onRoleChange()">
-            <option value="">-- Seleccione un rol --</option>
-            <option *ngFor="let role of roles" [value]="role.roleId">
-              {{ role.roleName }} {{ role.blocked === 1 ? '(En uso)' : '' }}
-            </option>
-          </select>
+  <div *ngIf="!isLoadingRoles && !isLoadingPrivileges">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded gap-3 gap-md-0">
+      <h4 class="mb-0">Asignar Privilegios a Roles</h4>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-4">
+            <label class="form-label mb-1 small text-muted">Seleccione un Rol</label>
+            <select class="form-select form-select-sm bg-light border-0" [(ngModel)]="selectedRoleId" (change)="onRoleChange()">
+              <option value="">-- Seleccione un rol --</option>
+              <option *ngFor="let role of roles" [value]="role.roleId">
+                {{ role.roleName }} {{ role.blocked === 1 ? '(En uso)' : '' }}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="selectedRoleId">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2 gap-md-0">
-      <h5 class="mb-0">Privilegios para: <span class="text-danger">{{ selectedRoleName }}</span></h5>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary btn-sm" (click)="selectAll()">
-          <i class="fa-solid fa-check-double"></i> <span class="d-none d-sm-inline">Seleccionar Todos</span>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" (click)="deselectAll()">
-          <i class="fa-solid fa-times"></i> <span class="d-none d-sm-inline">Deseleccionar Todos</span>
-        </button>
+    <div *ngIf="selectedRoleId">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2 gap-md-0">
+        <h5 class="mb-0">Privilegios para: <span class="text-danger">{{ selectedRoleName }}</span></h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" (click)="selectAll()">
+            <i class="fa-solid fa-check-double"></i> <span class="d-none d-sm-inline">Seleccionar Todos</span>
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="deselectAll()">
+            <i class="fa-solid fa-times"></i> <span class="d-none d-sm-inline">Deseleccionar Todos</span>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="text-center py-4" *ngIf="loading">
-      <i class="fa-solid fa-spinner fa-spin text-muted"></i> Cargando privilegios...
-    </div>
+      <div class="text-center py-4" *ngIf="loading">
+        <i class="fa-solid fa-spinner fa-spin text-muted"></i> Cargando privilegios...
+      </div>
 
-    <div class="d-none d-md-block" *ngIf="!loading">
-      <div class="card shadow-sm border-0 overflow-hidden">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
-            <thead class="bg-light text-muted text-uppercase">
-              <tr>
-                <th class="py-2 border-0" style="width: 70px;"></th>
-                <th class="py-2 border-0">Nombre del Privilegio</th>
-                <th class="py-2 border-0">Ruta</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let privilege of privileges">
-                <td>
-                  <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" 
-                           role="switch"
-                           [id]="'switch_' + privilege.privilegeId"
-                           [checked]="assignedPrivileges.includes(privilege.privilegeId)"
-                           (change)="togglePrivilege(privilege.privilegeId, $event)">
-                  </div>
-                </td>
-                <td class="fw-bold">
-                  <label [for]="'switch_' + privilege.privilegeId" class="cursor-pointer" style="cursor: pointer;">
+      <div class="d-none d-md-block" *ngIf="!loading">
+        <div class="card shadow-sm border-0 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+              <thead class="bg-light text-muted text-uppercase">
+                <tr>
+                  <th class="py-2 border-0" style="width: 70px;"></th>
+                  <th class="py-2 border-0">Nombre del Privilegio</th>
+                  <th class="py-2 border-0">Ruta</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let privilege of privileges">
+                  <td>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" 
+                             role="switch"
+                             [id]="'switch_' + privilege.privilegeId"
+                             [checked]="assignedPrivileges.includes(privilege.privilegeId)"
+                             (change)="togglePrivilege(privilege.privilegeId, $event)">
+                    </div>
+                  </td>
+                  <td class="fw-bold">
+                    <label [for]="'switch_' + privilege.privilegeId" class="cursor-pointer" style="cursor: pointer;">
+                      {{ privilege.privilegeName }}
+                    </label>
+                   </td>
+                  <td><code class="small">{{ privilege.route }}</code></td>
+                </tr>
+                <tr *ngIf="privileges.length === 0">
+                  <td colspan="3" class="text-center text-muted py-4">No hay privilegios registrados</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-md-none" *ngIf="!loading">
+        <div class="row g-2">
+          <div class="col-12" *ngFor="let privilege of privileges">
+            <div class="card shadow-sm border-0">
+              <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input" type="checkbox" 
+                         role="switch"
+                         [id]="'switch_' + privilege.privilegeId"
+                         [checked]="assignedPrivileges.includes(privilege.privilegeId)"
+                         (change)="togglePrivilege(privilege.privilegeId, $event)">
+                </div>
+                <div class="flex-grow-1">
+                  <label [for]="'switch_' + privilege.privilegeId" class="d-block fw-bold mb-1" style="cursor: pointer;">
                     {{ privilege.privilegeName }}
                   </label>
-                 </td>
-                <td><code class="small">{{ privilege.route }}</code></td>
-              </tr>
-              <tr *ngIf="privileges.length === 0">
-                <td colspan="3" class="text-center text-muted py-4">No hay privilegios registrados</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-md-none" *ngIf="!loading">
-      <div class="row g-2">
-        <div class="col-12" *ngFor="let privilege of privileges">
-          <div class="card shadow-sm border-0">
-            <div class="card-body p-3 d-flex align-items-center gap-3">
-              <div class="form-check form-switch m-0">
-                <input class="form-check-input" type="checkbox" 
-                       role="switch"
-                       [id]="'switch_' + privilege.privilegeId"
-                       [checked]="assignedPrivileges.includes(privilege.privilegeId)"
-                       (change)="togglePrivilege(privilege.privilegeId, $event)">
+                  <code class="small text-danger">{{ privilege.route }}</code>
+                </div>
               </div>
-              <div class="flex-grow-1">
-                <label [for]="'switch_' + privilege.privilegeId" class="d-block fw-bold mb-1" style="cursor: pointer;">
-                  {{ privilege.privilegeName }}
-                </label>
-                <code class="small text-danger">{{ privilege.route }}</code>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="privileges.length === 0">
+            <div class="card shadow-sm border-0">
+              <div class="card-body p-3 text-center text-muted">
+                No hay privilegios registrados
               </div>
             </div>
           </div>
         </div>
-        <div class="col-12" *ngIf="privileges.length === 0">
-          <div class="card shadow-sm border-0">
-            <div class="card-body p-3 text-center text-muted">
-              No hay privilegios registrados
-            </div>
-          </div>
-        </div>
+      </div>
+
+      <div class="mt-4 text-end" *ngIf="!loading">
+        <button class="btn btn-danger px-4 shadow-sm w-100 w-md-auto" (click)="saveAssignments()" [disabled]="saving">
+          <i class="fa-solid" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+          {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
       </div>
     </div>
 
-    <div class="mt-4 text-end" *ngIf="!loading">
-      <button class="btn btn-danger px-4 shadow-sm w-100 w-md-auto" (click)="saveAssignments()" [disabled]="saving">
-        <i class="fa-solid" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
-        {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
-      </button>
+    <div class="text-center py-5" *ngIf="!selectedRoleId">
+      <i class="fa-solid fa-lock fa-3x text-muted mb-3"></i>
+      <p class="text-muted">Seleccione un rol para gestionar sus privilegios</p>
     </div>
-  </div>
-
-  <div class="text-center py-5" *ngIf="!selectedRoleId">
-    <i class="fa-solid fa-lock fa-3x text-muted mb-3"></i>
-    <p class="text-muted">Seleccione un rol para gestionar sus privilegios</p>
   </div>
 </div>

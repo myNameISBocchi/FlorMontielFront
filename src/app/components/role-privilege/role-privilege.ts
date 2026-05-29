@@ -23,6 +23,8 @@ export class RolePrivilege implements OnInit {
   assignedPrivileges: string[] = [];
   loading: boolean = false;
   saving: boolean = false;
+  isLoadingRoles = true;
+  isLoadingPrivileges = true;
   public authService = inject(Auth);
 
   constructor(
@@ -38,22 +40,32 @@ export class RolePrivilege implements OnInit {
   }
 
   loadRoles(): void {
+    this.isLoadingRoles = true;
     this.roleService.getRoles().subscribe({
       next: (res: any) => {
         this.roles = res.results || res;
+        this.isLoadingRoles = false;
         this.cdr.detectChanges();
       },
-      error: () => Swal.fire('Error', 'No se pudieron cargar los roles', 'error')
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        this.isLoadingRoles = false;
+      }
     });
   }
 
   loadPrivileges(): void {
+    this.isLoadingPrivileges = true;
     this.privilegeService.getPrivileges().subscribe({
       next: (res: any) => {
         this.privileges = res.results || res;
+        this.isLoadingPrivileges = false;
         this.cdr.detectChanges();
       },
-      error: () => Swal.fire('Error', 'No se pudieron cargar los privilegios', 'error')
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar los privilegios', 'error');
+        this.isLoadingPrivileges = false;
+      }
     });
   }
 

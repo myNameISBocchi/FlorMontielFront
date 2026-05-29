@@ -26,6 +26,7 @@ export class Privilege implements OnInit {
   totalPages: number = 1;
   pagesArray: number[] = [];
   searchTerm: string = '';
+  isLoading = true;
 
   constructor(private privilegeService: PrivilegeService, private cdr: ChangeDetectorRef) {}
 
@@ -34,32 +35,35 @@ export class Privilege implements OnInit {
   }
 
   loadPrivileges(): void {
+    this.isLoading = true;
     this.privilegeService.getPrivileges().subscribe({
       next: (res: any) => {
         this.privileges = res.results || res;
         this.filteredPrivileges = [...this.privileges];
         this.updatePagination();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         Swal.fire('Error', 'No se pudieron cargar los privilegios', 'error');
+        this.isLoading = false;
       }
     });
   }
 
   filterPrivileges(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredPrivileges = [...this.privileges];
-    } else {
-      const term = this.searchTerm.toLowerCase().trim();
-      this.filteredPrivileges = this.privileges.filter(privilege => 
-        privilege.privilegeName?.toLowerCase().includes(term) ||
-        privilege.route?.toLowerCase().includes(term)
-      );
-    }
-    this.currentPage = 1;
-    this.updatePagination();
+  if (!this.searchTerm.trim()) {
+    this.filteredPrivileges = [...this.privileges];
+  } else {
+    const term = this.searchTerm.toLowerCase().trim();
+    this.filteredPrivileges = this.privileges.filter(privilege => 
+      privilege.privilegeName?.toLowerCase().includes(term) ||
+      privilege.route?.toLowerCase().includes(term)
+    );
   }
+  this.currentPage = 1;
+  this.updatePagination();
+}
 
   clearSearch(): void {
     this.searchTerm = '';
