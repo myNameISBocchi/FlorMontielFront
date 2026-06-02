@@ -94,7 +94,11 @@ export class RolePrivilege implements OnInit {
         }
         
         if (results && results.length > 0) {
-          this.assignedPrivileges = results.map((item: any) => item.privilegeId);
+          const assignedPrivilegeNames = results.map((item: any) => item.privilegeName);
+          
+          this.assignedPrivileges = this.privileges
+            .filter((privilege: any) => assignedPrivilegeNames.includes(privilege.privilegeName))
+            .map((privilege: any) => privilege.privilegeId);
         }
         
         this.loading = false;
@@ -106,10 +110,6 @@ export class RolePrivilege implements OnInit {
         this.cdr.detectChanges();
       }
     });
-  }
-
-  isPrivilegeAssigned(privilegeId: string): boolean {
-    return this.assignedPrivileges.includes(privilegeId);
   }
 
   togglePrivilege(privilegeId: string, event: Event): void {
