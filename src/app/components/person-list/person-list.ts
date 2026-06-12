@@ -30,7 +30,7 @@ export class PersonList implements OnInit {
   council: any[] = [];
   committee: any[] = [];
   city: any[] = [];
-  roles: any[] = []; 
+  roles: any[] = [];
   selectedRolesMap: { [key: string]: boolean } = {};
   selectedCouncilId: string | null = null;
   pagedPeoples: any[] = [];
@@ -77,28 +77,28 @@ export class PersonList implements OnInit {
   }
 
   onSearch() {
-  const term = this.searchTerm.trim().toLowerCase();
-  
-  if (!term) {
-    this.filteredPeoples = [...this.peoples];
-  } else {
-    this.filteredPeoples = this.peoples.filter(person => {
-      return person.firstName?.toLowerCase().includes(term) ||
-             person.lastName?.toLowerCase().includes(term) ||
-             person.identification?.toLowerCase().includes(term) ||
-             person.email?.toLowerCase().includes(term) ||
-             person.phone?.toLowerCase().includes(term) ||
-             person.comunityName?.toLowerCase().includes(term) ||
-             person.councilName?.toLowerCase().includes(term) ||
-             person.committeeName?.toLowerCase().includes(term) ||
-             person.roleName?.toLowerCase().includes(term);
-    });
+    const term = this.searchTerm.trim().toLowerCase();
+    
+    if (!term) {
+      this.filteredPeoples = [...this.peoples];
+    } else {
+      this.filteredPeoples = this.peoples.filter(person => {
+        return person.firstName?.toLowerCase().includes(term) ||
+               person.lastName?.toLowerCase().includes(term) ||
+               person.identification?.toLowerCase().includes(term) ||
+               person.email?.toLowerCase().includes(term) ||
+               person.phone?.toLowerCase().includes(term) ||
+               person.comunityName?.toLowerCase().includes(term) ||
+               person.councilName?.toLowerCase().includes(term) ||
+               person.committeeName?.toLowerCase().includes(term) ||
+               person.roleName?.toLowerCase().includes(term);
+      });
+    }
+    
+    this.currentPage = 1;
+    this.updatePagination();
+    this.cdr.detectChanges();
   }
-  
-  this.currentPage = 1;
-  this.updatePagination();
-  this.cdr.detectChanges();
-}
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredPeoples.length / this.pageSize);
@@ -125,22 +125,22 @@ export class PersonList implements OnInit {
   loadPeoples() {
     this.isLoading = true;
     this.personService.getPeoples().subscribe({
-        next: (data: any) => {
-            this.peoples = (data.results || []).map((person: any) => {
-                if (person.roleName && typeof person.roleName === 'string') {
-                    person.roleList = person.roleName.split(', ');
-                } else if (Array.isArray(person.roleName)) {
-                    person.roleList = person.roleName;
-                } else {
-                    person.roleList = [];
-                }
-                return person;
-            });
-            this.filteredPeoples = [...this.peoples];
-            this.updatePagination();
-            this.isLoading = false;
-            this.cdr.detectChanges();
-        }
+      next: (data: any) => {
+        this.peoples = (data.results || []).map((person: any) => {
+          if (person.roleName && typeof person.roleName === 'string') {
+            person.roleList = person.roleName.split(', ');
+          } else if (Array.isArray(person.roleName)) {
+            person.roleList = person.roleName;
+          } else {
+            person.roleList = [];
+          }
+          return person;
+        });
+        this.filteredPeoples = [...this.peoples];
+        this.updatePagination();
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -151,6 +151,15 @@ export class PersonList implements OnInit {
   openEditModal(person: any) {
     this.personSelect = { ...person };
     this.selectedRolesMap = {};
+    
+    if (this.roles.length === 0) {
+      this.personService.getRoles().subscribe((res: any) => {
+        this.roles = res?.results || res || [];
+        this.marcarRolesDelUsuario();
+      });
+    } else {
+      this.marcarRolesDelUsuario();
+    }
 
     let fechaFormateada = '';
     if (this.personSelect.date) {
@@ -168,7 +177,7 @@ export class PersonList implements OnInit {
       comunityId: this.personSelect.comunityId || null,
       councilId: this.personSelect.councilId || null,
       committeeId: this.personSelect.committeeId || null,
-      password: '' 
+      password: ''
     });
 
     if (this.personSelect.comunityId) {
@@ -182,27 +191,59 @@ export class PersonList implements OnInit {
     if (this.filteredCommittees.length === 0) {
       this.loadAllCommittees();
     }
+  }
 
-    if (person.roleId) {
-      const currentRoles = Array.isArray(person.roleId) ? person.roleId : [person.roleId];
-      currentRoles.forEach((id: string) => {
-        this.selectedRolesMap[id] = true;
+  marcarRolesDelUsuario() {
+    if (!this.personSelect) return;
+    
+    if (this.personSelect.roleId) {
+      let userRoleIds: string[] = [];
+      
+      if (typeof this.personSelect.roleId === 'string') {
+        userRoleIds = this.personSelect.roleId.split(',').map((id: string) => id.trim());
+      } else if (Array.isArray(this.personSelect.roleId)) {
+        userRoleIds = this.personSelect.roleId;
+      }
+      
+      userRoleIds.forEach((roleId: string) => {
+        if (roleId) {
+          this.selectedRolesMap[roleId] = true;
+        }
       });
     }
+    
+    if (this.personSelect.roleList && this.personSelect.roleList.length > 0 && this.roles.length > 0) {
+      this.roles.forEach((role: any) => {
+        if (this.personSelect.roleList.includes(role.roleName)) {
+          this.selectedRolesMap[role.roleId] = true;
+        }
+      });
+    }
+    
+    if (this.personSelect.roleName && typeof this.personSelect.roleName === 'string' && this.roles.length > 0) {
+      const roleNames = this.personSelect.roleName.split(', ');
+      this.roles.forEach((role: any) => {
+        if (roleNames.includes(role.roleName)) {
+          this.selectedRolesMap[role.roleId] = true;
+        }
+      });
+    }
+    
+    this.cdr.detectChanges();
   }
 
   onComunityChange(event: any) {
     const comunityId = event.target.value;
     if (comunityId) {
-        this.personService.getCouncilsByComunity(comunityId).subscribe({
-            next: (res: any) => {
-                this.filteredCouncils = res.results || res || [];
-                this.editForm.patchValue({ councilId: null });
-            }
-        });
+      this.personService.getCouncilsByComunity(comunityId).subscribe({
+        next: (res: any) => {
+          this.filteredCouncils = res.results || res || [];
+          this.editForm.patchValue({ councilId: null });
+        }
+      });
     } else {
-        this.filteredCouncils = [];
-        this.editForm.patchValue({ councilId: null });
+      this.filteredCouncils = [];
+      this.editForm.patchValue({ councilId: null });
     }
   }
 
@@ -278,43 +319,43 @@ export class PersonList implements OnInit {
     if (!this.personSelect || !this.personSelect.personId) return;
 
     if (this.editForm.valid) {
-        const id = this.personSelect.personId;
-        const formValues = this.editForm.value;
+      const id = this.personSelect.personId;
+      const formValues = this.editForm.value;
 
-        const dataToUpdate: any = {
-            firstName: formValues.firstName,
-            lastName: formValues.lastName,
-            identification: formValues.identification,
-            phone: formValues.phone,
-            date: formValues.date,
-            cityId: formValues.cityId,
-            email: formValues.email,
-            status: this.personSelect.status,
-            comunityId: formValues.comunityId,
-            councilId: formValues.councilId,
-            committeeId: formValues.committeeId
-        };
+      const dataToUpdate: any = {
+        firstName: formValues.firstName,
+        lastName: formValues.lastName,
+        identification: formValues.identification,
+        phone: formValues.phone,
+        date: formValues.date,
+        cityId: formValues.cityId,
+        email: formValues.email,
+        status: this.personSelect.status,
+        comunityId: formValues.comunityId,
+        councilId: formValues.councilId,
+        committeeId: formValues.committeeId
+      };
 
-        if (formValues.password && formValues.password.trim() !== '') {
-            dataToUpdate.password = formValues.password;
-        }
+      if (formValues.password && formValues.password.trim() !== '') {
+        dataToUpdate.password = formValues.password;
+      }
 
-        this.personService.updatePerson(id, dataToUpdate).subscribe({
-            next: () => {
-                Swal.fire({ icon: 'success', title: '¡Actualizado!', text: 'Registro actualizado con éxito', timer: 2000, showConfirmButton: false });
-                this.loadPeoples();
-                this.personSelect = null;
-                const modalElement = document.getElementById('editPersonModal');
-                if (modalElement) {
-                    const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
-                    if (bootstrapModal) bootstrapModal.hide();
-                }
-            },
-            error: () => Swal.fire('Error', 'No se pudo actualizar el registro', 'error')
-        });
+      this.personService.updatePerson(id, dataToUpdate).subscribe({
+        next: () => {
+          Swal.fire({ icon: 'success', title: '¡Actualizado!', text: 'Registro actualizado con éxito', timer: 2000, showConfirmButton: false });
+          this.loadPeoples();
+          this.personSelect = null;
+          const modalElement = document.getElementById('editPersonModal');
+          if (modalElement) {
+            const bootstrapModal = (window as any).bootstrap.Modal.getInstance(modalElement);
+            if (bootstrapModal) bootstrapModal.hide();
+          }
+        },
+        error: () => Swal.fire('Error', 'No se pudo actualizar el registro', 'error')
+      });
     } else {
-        this.editForm.markAllAsTouched();
-        Swal.fire({ icon: 'warning', title: 'Campos incompletos o incorrectos', text: 'Por favor, revisa las validaciones antes de guardar' });
+      this.editForm.markAllAsTouched();
+      Swal.fire({ icon: 'warning', title: 'Campos incompletos o incorrectos', text: 'Por favor, revisa las validaciones antes de guardar' });
     }
   }
 
@@ -328,17 +369,17 @@ export class PersonList implements OnInit {
     if (this.searchTerm) filtros.firstName = this.searchTerm.trim();
 
     this.reportService.imprimirVoceros(filtros).subscribe({
-        next: (data: Blob) => {
-            const blob = new Blob([data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Reporte_General_Voceros_${new Date().getTime()}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
+      next: (data: Blob) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Reporte_General_Voceros_${new Date().getTime()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
     });
   }
 
